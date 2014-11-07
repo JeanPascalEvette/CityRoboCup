@@ -49,6 +49,8 @@ public class Goalkeeper extends Player {
     /** {@inheritDoc} */
     @Override
     public void postInfo() {
+        super.postInfo();
+        getPlayer().turn((30));
 //        if (distBall < 10) {
 //            if(canSeeBall)
 //            {

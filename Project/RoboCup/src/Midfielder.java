@@ -54,7 +54,8 @@ public class Midfielder extends Player {
     /** {@inheritDoc} */
     @Override
     public void postInfo() {
-        
+        super.postInfo();
+        getPlayer().turn((30));
     }
 
 

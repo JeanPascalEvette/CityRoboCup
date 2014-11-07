@@ -62,7 +62,7 @@ public abstract class Player implements ControllerPlayer {
     protected double            closestPlayerOtherDistance = Double.MAX_VALUE;
     protected double            closestPlayerOtherDirection = 0;
     protected int               myNumber = -1;
-    protected ArrayList<Flag>   flagsSeen = null;
+    protected ArrayList<FlagObject>   flagsSeen = null;
     protected Flag              closestFlag = null;
     protected double            closestFlagDistance = Double.MAX_VALUE;
     protected double            closestFlagDirection = 0;
@@ -171,7 +171,7 @@ public abstract class Player implements ControllerPlayer {
     public void infoSeeFlagRight(Flag flag, double distance, double direction, double distChange, double dirChange,
                                  double bodyFacingDirection, double headFacingDirection) {
         canSeeNothing = false;
-        flagsSeen.add(flag);
+        flagsSeen.add(new FlagObject(flag, direction, distance));
         if(distance < closestFlagDistance)
         {
             closestFlag = flag;
@@ -184,7 +184,7 @@ public abstract class Player implements ControllerPlayer {
     public void infoSeeFlagLeft(Flag flag, double distance, double direction, double distChange, double dirChange,
                                 double bodyFacingDirection, double headFacingDirection) {
         canSeeNothing = false;
-        flagsSeen.add(flag);
+        flagsSeen.add(new FlagObject(flag, direction, distance));
         if(distance < closestFlagDistance)
         {
             closestFlag = flag;
@@ -198,7 +198,7 @@ public abstract class Player implements ControllerPlayer {
     public void infoSeeFlagOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
                                double bodyFacingDirection, double headFacingDirection) {
         canSeeNothing = false;
-        flagsSeen.add(flag);
+        flagsSeen.add(new FlagObject(flag, direction, distance));
         if(distance < closestFlagDistance)
         {
             closestFlag = flag;
@@ -212,7 +212,7 @@ public abstract class Player implements ControllerPlayer {
     public void infoSeeFlagOther(Flag flag, double distance, double direction, double distChange, double dirChange,
                                  double bodyFacingDirection, double headFacingDirection) {
         canSeeNothing = false;
-        flagsSeen.add(flag);
+        flagsSeen.add(new FlagObject(flag, direction, distance));
         if(distance < closestFlagDistance)
         {
             closestFlag = flag;
@@ -226,7 +226,7 @@ public abstract class Player implements ControllerPlayer {
     public void infoSeeFlagCenter(Flag flag, double distance, double direction, double distChange, double dirChange,
                                   double bodyFacingDirection, double headFacingDirection) {
         canSeeNothing = false;
-        flagsSeen.add(flag);
+        flagsSeen.add(new FlagObject(flag, direction, distance));
         if(distance < closestFlagDistance)
         {
             closestFlag = flag;
@@ -240,7 +240,7 @@ public abstract class Player implements ControllerPlayer {
     public void infoSeeFlagCornerOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
                                      double bodyFacingDirection, double headFacingDirection) {
         canSeeNothing = false;
-        flagsSeen.add(flag);
+        flagsSeen.add(new FlagObject(flag, direction, distance));
         if(distance < closestFlagDistance)
         {
             closestFlag = flag;
@@ -254,7 +254,7 @@ public abstract class Player implements ControllerPlayer {
     public void infoSeeFlagCornerOther(Flag flag, double distance, double direction, double distChange,
                                        double dirChange, double bodyFacingDirection, double headFacingDirection) {
         canSeeNothing = false;
-        flagsSeen.add(flag);
+        flagsSeen.add(new FlagObject(flag, direction, distance));
         if(distance < closestFlagDistance)
         {
             closestFlag = flag;
@@ -268,7 +268,7 @@ public abstract class Player implements ControllerPlayer {
     public void infoSeeFlagPenaltyOwn(Flag flag, double distance, double direction, double distChange,
                                       double dirChange, double bodyFacingDirection, double headFacingDirection) {
         canSeeNothing = false;
-        flagsSeen.add(flag);
+        flagsSeen.add(new FlagObject(flag, direction, distance));
         if(distance < closestFlagDistance)
         {
             closestFlag = flag;
@@ -282,7 +282,7 @@ public abstract class Player implements ControllerPlayer {
     public void infoSeeFlagPenaltyOther(Flag flag, double distance, double direction, double distChange,
             double dirChange, double bodyFacingDirection, double headFacingDirection) {
         canSeeNothing = false;
-        flagsSeen.add(flag);
+        flagsSeen.add(new FlagObject(flag, direction, distance));
         if(distance < closestFlagDistance)
         {
             closestFlag = flag;
@@ -296,7 +296,7 @@ public abstract class Player implements ControllerPlayer {
     public void infoSeeFlagGoalOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
                                    double bodyFacingDirection, double headFacingDirection) {
         canSeeNothing = false;
-        flagsSeen.add(flag);
+        flagsSeen.add(new FlagObject(flag, direction, distance));
         if(distance < closestFlagDistance)
         {
             closestFlag = flag;
@@ -315,7 +315,7 @@ public abstract class Player implements ControllerPlayer {
     public void infoSeeFlagGoalOther(Flag flag, double distance, double direction, double distChange, double dirChange,
                                      double bodyFacingDirection, double headFacingDirection) {
         canSeeNothing = false;
-        flagsSeen.add(flag);
+        flagsSeen.add(new FlagObject(flag, direction, distance));
         if(distance < closestFlagDistance)
         {
             closestFlag = flag;
@@ -369,16 +369,9 @@ public abstract class Player implements ControllerPlayer {
     }
 
 
-    public Coords getPosition() {
+    protected Coords getPosition() {
         {
-        Coords flagCoord = Tools.getFlag(flagsSeen);
-        
-        double x = closestFlagDistance * Math.cos(Math.toRadians(playerDirection + closestFlagDirection));
-        double y = closestFlagDistance * Math.sin(Math.toRadians(playerDirection + closestFlagDirection));
-        
-        Coords toFlag = new Coords(x,y);
-        Coords self = new Coords(toFlag.x - flagCoord.x, toFlag.y - flagCoord.y);
-        return(self);
+            return(Tools.getPlayerPosition(flagsSeen, playerDirection));
         }
     }
     
