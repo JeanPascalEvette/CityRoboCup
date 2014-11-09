@@ -137,6 +137,8 @@ public abstract class Player implements ControllerPlayer {
     @Override
     public void postInfo() {
         m_position = getPosition();
+        Coords p1 = Tools.doCircleThingy(flagsSeen, true);
+        Coords p2 = Tools.doCircleThingy(flagsSeen, false);
         //NYI
         
 //        if (canSeeNothing) {
