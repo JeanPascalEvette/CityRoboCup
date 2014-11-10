@@ -41,7 +41,7 @@ public class Team extends AbstractTeam {
             p = new Goalkeeper(team, number);
         } else if (number > 0 && number < 5) { // 1, 2, 3, 4 are Defensers
             p = new Defenser(team, number);
-        } else if (number > 4 && number < 9) { // 5, 6, 7, 8 are midfielders
+        } else if (number > 4 && number < 10) { // 5, 6, 7, 8 are midfielders
             p = new Midfielder(team, number);
         } else { // 9, 10 are forwards
             p = new Forward(team, number);

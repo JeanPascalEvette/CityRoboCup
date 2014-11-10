@@ -11,7 +11,7 @@ import java.util.ArrayList;
  *
  * @author jpevette
  */
-public class LineObject {
+public class LineObject implements Comparable {
     public Line line;
     public double direction;
     public double distance;
@@ -23,5 +23,20 @@ public class LineObject {
         this.direction = direction;
         this.distance = distance;
         coordinates = null;
+    }
+    
+    @Override
+    public int compareTo(Object o) {
+        if(o.getClass()  == this.getClass())
+        {
+            if(this.distance < ((LineObject)o).distance)
+                return -1;
+            else if (this.distance > ((LineObject)o).distance)
+                return 1;
+            else
+                return 0;
+        }
+        else 
+            throw new UnsupportedOperationException("Can only compare with LineObjects."); //To change body of generated methods, choose Tools | Templates.
     }
 }

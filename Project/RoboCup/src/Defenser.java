@@ -121,15 +121,9 @@ public class Defenser extends Player {
         } else if(canSeeOwnGoal){
             getPlayer().turn(180);
         }
-        else if(leftRight)
-        {
-            getPlayer().turn(50);
-            leftRight = !leftRight; 
-        }
         else
         {
-            getPlayer().turn(-50);
-            leftRight = !leftRight;
+            getPlayer().turn(90);
         }
     }
 

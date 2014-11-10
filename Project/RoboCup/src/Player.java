@@ -14,6 +14,7 @@ import com.github.robocup_atan.atan.model.enums.ViewAngle;
 import com.github.robocup_atan.atan.model.enums.ViewQuality;
 import com.github.robocup_atan.atan.model.enums.Warning;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.apache.log4j.Logger;
 
@@ -70,11 +71,14 @@ public abstract class Player implements ControllerPlayer {
     protected ArrayList<LineObject>              lineSeen = null;
     protected PlayMode          currentPlayMode = null;
     protected double            blackListTimer = Double.MIN_VALUE;
-    protected double            playerDirection = 0;
+    protected double            direction = 0;
     protected int               checksBothSides = -1; // -1 = NO - 0 = Checking Left - 1 = Checking Right
     protected boolean         leftRight = false;
     protected Coords            m_position;
     protected int               positionLifetime;
+    protected int               closestPlayerLifetime;
+    protected double            speed;
+    
     
     protected int            startingX;
     protected int            startingY;
@@ -103,6 +107,8 @@ public abstract class Player implements ControllerPlayer {
         closestPlayerOtherDistance = Double.MAX_VALUE;
         
         m_position = null;
+        positionLifetime = 0;
+        closestPlayerLifetime = 0;
      }
     
     protected void startBlackList(int time)
@@ -127,23 +133,29 @@ public abstract class Player implements ControllerPlayer {
     public void preInfo() {
         canSeeOwnGoal = false;
         canSeeBall    = false;
-        distanceBall = 0;
         canSeeOtherGoal = false;
         canSeeNothing = true;
         flagsSeen.clear();
         lineSeen.clear();
-        playerDirection = 0;
+        direction = 0;
         closestPlayer = null;
-        closestPlayerDistance = Double.MAX_VALUE;
-        closestPlayerDirection = 0;
+        if(closestPlayerLifetime < 5)
+            closestPlayerLifetime++;
+        else
+        {
+            closestPlayerDistance = Double.MAX_VALUE;
+            closestPlayerDirection = 0;
+        }
         closestPlayerOtherDistance = Double.MAX_VALUE;
         closestPlayerOtherDirection = 0;
         distanceBall = Double.MAX_VALUE;
+        directionBall = Double.MAX_VALUE;
+        
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void postInfo() {
+    private void callExpensiveStuff()
+    {
+        Collections.sort(flagsSeen);
+        Collections.sort(lineSeen);
         Coords p1 = Tools.doCircleThingy(flagsSeen, true);
         if(p1 == null)
         {
@@ -174,6 +186,11 @@ public abstract class Player implements ControllerPlayer {
         else
             m_position = p1;
             
+    }
+    /** {@inheritDoc} */
+    @Override
+    public void postInfo() {
+        callExpensiveStuff();
         //NYI
         
 //        if (canSeeNothing) {
@@ -197,10 +214,8 @@ public abstract class Player implements ControllerPlayer {
     {
         if(blackListTimer > System.nanoTime())
             return Double.MAX_VALUE;
-        else if(canSeeBall)
-            return distanceBall;
         else
-            return Double.MAX_VALUE;
+            return distanceBall;
     }
     
     /** {@inheritDoc} */
@@ -302,11 +317,13 @@ public abstract class Player implements ControllerPlayer {
 
     protected void shootTowardsClosestPlayer()
     {
-        if(closestPlayer != null)
+        if(closestPlayerDirection != Double.MAX_VALUE)
         {
+                getPlayer().say("kicking");
             checksBothSides = -1;
+            getPlayer().turn(directionBall);
             getPlayer().kick(70, closestPlayerDirection);
-            startBlackList(5);
+            startBlackList(3);
         }
         else if (checksBothSides == -1)
         {
@@ -401,9 +418,10 @@ public abstract class Player implements ControllerPlayer {
         canSeeNothing = false;
         lineSeen.add(new LineObject(line, direction, distance));
         
+        /*
         if(line == Line.RIGHT) {
             if(direction > 0)
-                playerDirection = -direction;
+                direction = -direction;
             else
                 playerDirection = -direction - 180;
         }
@@ -429,12 +447,13 @@ public abstract class Player implements ControllerPlayer {
             else if(direction < 0)
                 playerDirection = -direction - 90;
         }
+        */
     }
 
 
     protected Coords getPosition() {
         {
-            return(Tools.getPlayerPosition(flagsSeen, playerDirection));
+            return(Tools.getPlayerPosition(flagsSeen, direction));
         }
     }
     
@@ -466,6 +485,7 @@ public abstract class Player implements ControllerPlayer {
         {
             closestPlayerDistance = distance;
             closestPlayerDirection = direction;
+            closestPlayerLifetime = 0;
             for(Player p : myTeam)
             {
                 if(p.getNumber() == number)
@@ -479,8 +499,15 @@ public abstract class Player implements ControllerPlayer {
     protected boolean checkIfClosestToBall()
     {
         for(Player p : myTeam)
+        {
             if(p != this && p.getDistanceFromBall() < getDistanceFromBall())
                 return false;
+            else if(p != this && p.getDistanceFromBall() == getDistanceFromBall())
+            {
+                if(p.getNumber() > getNumber())
+                    return false;
+            }
+        }
         return true;
     }
 
@@ -518,7 +545,10 @@ public abstract class Player implements ControllerPlayer {
     public void infoSenseBody(ViewQuality viewQuality, ViewAngle viewAngle, double stamina, double unknown,
                               double effort, double speedAmount, double speedDirection, double headAngle,
                               int kickCount, int dashCount, int turnCount, int sayCount, int turnNeckCount,
-                              int catchCount, int moveCount, int changeViewCount) {}
+                              int catchCount, int moveCount, int changeViewCount) {
+        speed = speedAmount;
+        direction = speedDirection;
+    }
 
     /** {@inheritDoc} */
     @Override

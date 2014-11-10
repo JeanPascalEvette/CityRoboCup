@@ -107,7 +107,7 @@ public class Tools {
         x = (0.5)*(d2.x+d1.x) + (0.5)*(d2.x-d1.x)*(Math.pow(dist1,2)-Math.pow(dist2,2))/Math.pow(d,2) - 2*(d2.y-d1.y)*K/Math.pow(d,2);
         y = (0.5)*(d2.y+d1.y) + (0.5)*(d2.y-d1.y)*(Math.pow(dist1,2)-Math.pow(dist2,2))/Math.pow(d,2) + 2*(d2.x-d1.x)*K/Math.pow(d,2);    
         }
-        return new Coords(x,y);      
+        return new Coords(x*.9,-y);      // Minor adjustements to increase accuracy
                 
         /*
         double d = Math.sqrt(Math.abs(d1.x - d2.x) + Math.abs(d1.y - d2.y));

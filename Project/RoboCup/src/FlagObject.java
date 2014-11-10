@@ -11,7 +11,7 @@ import java.util.ArrayList;
  *
  * @author jpevette
  */
-public class FlagObject {
+public class FlagObject implements Comparable {
     public Flag flag;
     public double direction;
     public double distance;
@@ -24,6 +24,7 @@ public class FlagObject {
         this.distance = distance;
         coordinates = null;
     }
+    
     
     public void getCoordinates(ArrayList<FlagObject> alFlag)
     {
@@ -73,5 +74,20 @@ public class FlagObject {
             return;
         }
         coordinates = myCoords;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if(o.getClass()  == this.getClass())
+        {
+            if(this.distance < ((FlagObject)o).distance)
+                return -1;
+            else if (this.distance > ((FlagObject)o).distance)
+                return 1;
+            else
+                return 0;
+        }
+        else 
+            throw new UnsupportedOperationException("Can only compare with FlagObjects."); //To change body of generated methods, choose Tools | Templates.
     }
 }
