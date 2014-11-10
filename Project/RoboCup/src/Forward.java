@@ -81,13 +81,19 @@ public class Forward extends Player {
                    
         if(checkIfClosestToBall()) // Trying to figure out if he can get the ball
         {
+            
             if(getPlayer().isTeamEast())
+            {
                 getPlayer().say(this.forwardId+" going for it !");
-            if (distanceBall < 0.7) { // Can shoot
-                getPlayer().say("kickable");
+                getPlayer().say("distanceBall="+distanceBall + " - "+ (distanceBall < 0.7));
+            }
+            if (distanceBall < 0.7) 
+            { // Can shoot
+                getPlayer().say(this.forwardId+" will kick it!");
                 if (currentPlayMode == PlayMode.FREE_KICK_FAULT_OWN || 
                         currentPlayMode == PlayMode.FREE_KICK_OWN || 
-                        currentPlayMode == PlayMode.KICK_OFF_OWN) {
+                        currentPlayMode == PlayMode.KICK_OFF_OWN) 
+                {
                     shootTowardsClosestPlayer();
                 }
                 else if(closestPlayerOtherDistance < 1.5)
@@ -112,6 +118,7 @@ public class Forward extends Player {
             }
             else
             {
+                getPlayer().say(this.forwardId+" cannot kick it!");
                 getPlayer().turn(directionBall);
                 getPlayer().dash(100);
             }
@@ -140,7 +147,7 @@ public class Forward extends Player {
             goDefaultPos();
         else
         {
-            getPlayer().say("NOTHINGELSE");
+            getPlayer().say("NOTHINGELSE!");
             getPlayer().turn(90);
         }
     }
@@ -171,7 +178,7 @@ public class Forward extends Player {
 
     
     private void goDefaultPos() {
-        getPlayer().say("GOing to default pos");
+        getPlayer().say("GOing to default pos!");
         if ((m_position != null && m_position.x < startingX - 5)) {
             getPlayer().turn(directionOtherGoal);
             getPlayer().dash(20);

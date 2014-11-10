@@ -317,9 +317,9 @@ public abstract class Player implements ControllerPlayer {
 
     protected void shootTowardsClosestPlayer()
     {
+                getPlayer().say("kicking!");
         if(closestPlayerDirection != Double.MAX_VALUE)
         {
-                getPlayer().say("kicking");
             checksBothSides = -1;
             getPlayer().turn(directionBall);
             getPlayer().kick(70, closestPlayerDirection);
@@ -498,6 +498,7 @@ public abstract class Player implements ControllerPlayer {
     
     protected boolean checkIfClosestToBall()
     {
+        getPlayer().say("Checking if closest !");
         for(Player p : myTeam)
         {
             if(p != this && p.getDistanceFromBall() < getDistanceFromBall())
