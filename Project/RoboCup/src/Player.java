@@ -72,6 +72,7 @@ public abstract class Player implements ControllerPlayer {
     protected double            playerDirection = 0;
     protected int               checksBothSides = -1; // -1 = NO - 0 = Checking Left - 1 = Checking Right
     protected Coords            m_position;
+    protected int               positionLifetime;
     
     /**
      * Constructs a new simple client.
@@ -95,7 +96,7 @@ public abstract class Player implements ControllerPlayer {
         closestPlayerOtherDirection = 0;
         closestPlayerOtherDistance = Double.MAX_VALUE;
         
-        m_position = new Coords(0,0);
+        m_position = null;
      }
     
     protected void startBlackList(int time)
@@ -136,9 +137,36 @@ public abstract class Player implements ControllerPlayer {
     /** {@inheritDoc} */
     @Override
     public void postInfo() {
-        m_position = getPosition();
         Coords p1 = Tools.doCircleThingy(flagsSeen, true);
-        Coords p2 = Tools.doCircleThingy(flagsSeen, false);
+        if(p1 == null)
+        {
+            if(positionLifetime < 10)
+                    positionLifetime++;
+                else
+                {
+                    m_position = null;
+                    positionLifetime = 0;
+                }
+        }
+        else if(Math.abs(p1.x) > 54.0 || Math.abs(p1.y) > 32.0)
+        {
+            p1 = Tools.doCircleThingy(flagsSeen, false);
+            if(Math.abs(p1.x) < 54.0 || Math.abs(p1.y) < 32.0)
+                m_position = p1;
+            else
+            {
+                if(positionLifetime < 10)
+                    positionLifetime++;
+                else
+                {
+                    m_position = null;
+                    positionLifetime = 0;
+                }
+            }
+        }
+        else
+            m_position = p1;
+            
         //NYI
         
 //        if (canSeeNothing) {

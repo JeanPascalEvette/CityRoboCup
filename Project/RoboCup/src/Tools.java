@@ -82,15 +82,71 @@ public class Tools {
         if(flag.coordinates == null) return null;
         if(flag2.coordinates == null) return null;
         double x,y;
-        x = formula(flag.coordinates, flag2.coordinates, flag.distance, flag2.distance, plusMinus);
-        y = formula(new Coords(flag2.coordinates.y, flag2.coordinates.x), new Coords(flag.coordinates.y, flag.coordinates.x), flag2.distance, flag.distance, plusMinus);
-        Coords c = new Coords(x,y);
+        Coords c = formula(flag.coordinates, flag2.coordinates, flag.distance, flag2.distance, plusMinus);
         return c;
     }
     
     
-    static private double formula(Coords d1, Coords d2, double dist1, double dist2, boolean plusMinus)
+    static private Coords formula(Coords d1, Coords d2, double dist1, double dist2, boolean plusMinus)
     {
+         
+        double d = Math.sqrt(Math.pow((d2.x-d1.x),2)+Math.pow((d2.y-d1.y),2));
+        double K = (0.25)*Math.sqrt((d+dist1+dist2)*(-d+dist1+dist2)*(d-dist1+dist2)*(d+dist1-dist2));
+        Coords C = new Coords((d2.x+d1.x)/2, (d2.y+d1.y)/2);
+        double CD = (0.5)*(Math.pow(dist1,2)-Math.pow(dist2,2))/d; 
+        
+        double x,y;
+
+        if(plusMinus)
+        {
+        x = (0.5)*(d2.x+d1.x) + (0.5)*(d2.x-d1.x)*(Math.pow(dist1,2)-Math.pow(dist2,2))/Math.pow(d,2) + 2*(d2.y-d1.y)*K/Math.pow(d,2);
+        y = (0.5)*(d2.y+d1.y) + (0.5)*(d2.y-d1.y)*(Math.pow(dist1,2)-Math.pow(dist2,2))/Math.pow(d,2) - 2*(d2.x-d1.x)*K/Math.pow(d,2);
+        }
+        else
+        {
+        x = (0.5)*(d2.x+d1.x) + (0.5)*(d2.x-d1.x)*(Math.pow(dist1,2)-Math.pow(dist2,2))/Math.pow(d,2) - 2*(d2.y-d1.y)*K/Math.pow(d,2);
+        y = (0.5)*(d2.y+d1.y) + (0.5)*(d2.y-d1.y)*(Math.pow(dist1,2)-Math.pow(dist2,2))/Math.pow(d,2) + 2*(d2.x-d1.x)*K/Math.pow(d,2);    
+        }
+          return new Coords(x,y);      
+                
+        /*
+        double d = Math.sqrt(Math.abs(d1.x - d2.x) + Math.abs(d1.y - d2.y));
+        double l1 = (Math.pow(dist1, 2) - Math.pow(dist2,2) + Math.pow(d,2))/(2*d);
+        double h = Math.sqrt(Math.pow(dist1,2) - Math.pow(l1,2));
+        double x3 = d1.x + (l1 * (d2.x - d1.x)) / d;
+        double y3 = d1.y + (l1 * (d2.y - d1.y)) / d;
+        double x ;
+        if(plusMinus)
+            x = x3 + (h * (d2.y - d1.y)) / d;
+        else
+            x = x3 - (h * (d2.y - d1.y)) / d;
+        double y = y3 + (h * (d2.x - d1.x)) / d;
+        return x;
+        
+        
+        double e = d2.x - d1.x;                          
+        double f = d2.y - d1.y;       
+        double p = Math.sqrt(Math.pow(e,2) + Math.pow(f,2));  
+        double k = (Math.pow(p,2) + Math.pow(dist1,2) - Math.pow(dist2,2))/(2*p);
+        double x,y;
+        if(plusMinus)
+        {
+            x = d1.x + e*k/p + (f/p)*Math.sqrt(Math.pow(dist1,2) - Math.pow(k,2));
+            y = d1.y + f*k/p - (e/p)*Math.sqrt(Math.pow(dist1,2) - Math.pow(k,2));
+          }
+        else
+        {
+            x = d1.x + e*k/p - (f/p)*Math.sqrt(Math.pow(dist1,2) - Math.pow(k,2));
+            y = d1.y + f*k/p + (e/p)*Math.sqrt(Math.pow(dist1,2) - Math.pow(k,2));
+          }
+
+          
+          return x;
+          
+          
+          
+          
+          
         double d = (Math.sqrt(Math.pow(d2.x - d1.x, 2) + Math.pow(d2.y - d1.y,2)));
         double x1 = ((0.5)*(d2.x+d1.x));
         double x2 =((0.5)*(d2.x-d1.x)*(Math.pow(dist1,2)-Math.pow(dist2,2))/Math.pow(d,2));
@@ -101,7 +157,7 @@ public class Tools {
             return x1 + x2 + x3 * K/Math.pow(d, 2);
         else
             return  x1 + x2 - x3 *K/Math.pow(d, 2);
-        
+        */
     }
     
     static Coords getPlayerPosition(ArrayList<FlagObject> alFlag, double playerDirection)
