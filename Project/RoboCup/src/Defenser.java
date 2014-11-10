@@ -44,6 +44,21 @@ public class Defenser extends Player {
         super(t, number);
         random = new Random(System.currentTimeMillis() + count);
         defenserId = count++;
+        
+            switch (defenserId) {
+                case 0 :
+                    startingX = -40;startingY = 15;
+                    break;
+                case 1 :
+                    startingX = -40;startingY = 5;
+                    break;
+                case 2 :
+                    startingX = -40;startingY = -5;
+                    break;
+                case 3 :
+                    startingX = -40;startingY = -15;
+                    break;
+            }
     }
 /** {@inheritDoc} */
     @Override
@@ -55,7 +70,67 @@ public class Defenser extends Player {
     @Override
     public void postInfo() {
         super.postInfo();
-        getPlayer().turn((30));
+        if (distanceBall < 0.7)
+        {
+            if(closestPlayerOtherDistance < 3)
+                shootTowardsClosestPlayer();
+            else
+            {
+                getPlayer().turn(directionOtherGoal);
+                getPlayer().dash(50);
+            }
+        }
+        else if (checkIfClosestToBall()) {
+            turnTowardBall();
+            getPlayer().dash(100);
+        } 
+        else if ((m_position != null && m_position.x < startingX - 5)) {
+            getPlayer().turn(directionOtherGoal);
+            getPlayer().dash(20);
+        }
+        else if ((m_position != null && m_position.x > startingX + 5)) {
+            getPlayer().turn(directionOwnGoal);
+            getPlayer().dash(20);
+        }
+        else if ((m_position != null && m_position.y < startingY - 5)) {
+            LineObject up = null;
+            for(LineObject l : lineSeen)
+            {
+                if(l.line == Line.LEFT)
+                    up = l;
+            }
+            if(up == null) getPlayer().turn(90);
+            else
+            {
+            getPlayer().turn(up.direction);
+            getPlayer().dash(20);
+            }
+        }else if ((m_position != null && m_position.y > startingY + 5)) {
+            LineObject down = null;
+            for(LineObject l : lineSeen)
+            {
+                if(l.line == Line.RIGHT)
+                    down = l;
+            }
+            if(down == null) getPlayer().turn(90);
+            else
+            {
+            getPlayer().turn(down.direction);
+            getPlayer().dash(20);
+            }
+        } else if(canSeeOwnGoal){
+            getPlayer().turn(180);
+        }
+        else if(leftRight)
+        {
+            getPlayer().turn(50);
+            leftRight = !leftRight; 
+        }
+        else
+        {
+            getPlayer().turn(-50);
+            leftRight = !leftRight;
+        }
     }
 
 
@@ -107,25 +182,6 @@ public class Defenser extends Player {
     @Override
     public void infoHearPlayMode(PlayMode playMode) {
         super.infoHearPlayMode(playMode);
-        if (playMode == PlayMode.BEFORE_KICK_OFF) {
-            this.pause(1000);
-            switch (defenserId) {
-                case 0 :
-                    this.getPlayer().move(-40, 15);
-                    break;
-                case 1 :
-                    this.getPlayer().move(-40, 5);
-                    break;
-                case 2 :
-                    this.getPlayer().move(-40, -5);
-                    break;
-                case 3 :
-                    this.getPlayer().move(-40, -15);
-                    break;
-                default :
-                    throw new Error("number must be initialized before move");
-            }
-        }
     }
 
 }

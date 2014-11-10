@@ -45,7 +45,8 @@ public abstract class Player implements ControllerPlayer {
     protected Random            random        = null;
     protected boolean           canSeeOwnGoal = false;
     protected boolean           canSeeNothing = true;
-    protected boolean           canSeeBall    = false;
+    protected
+            boolean           canSeeBall    = false;
     protected double            directionBall;
     protected double            directionOwnGoal;
     protected double            distanceBall;
@@ -66,13 +67,17 @@ public abstract class Player implements ControllerPlayer {
     protected Flag              closestFlag = null;
     protected double            closestFlagDistance = Double.MAX_VALUE;
     protected double            closestFlagDirection = 0;
-    protected Line              lineSeen = null;
+    protected ArrayList<LineObject>              lineSeen = null;
     protected PlayMode          currentPlayMode = null;
     protected double            blackListTimer = Double.MIN_VALUE;
     protected double            playerDirection = 0;
     protected int               checksBothSides = -1; // -1 = NO - 0 = Checking Left - 1 = Checking Right
+    protected boolean         leftRight = false;
     protected Coords            m_position;
     protected int               positionLifetime;
+    
+    protected int            startingX;
+    protected int            startingY;
     
     /**
      * Constructs a new simple client.
@@ -83,6 +88,7 @@ public abstract class Player implements ControllerPlayer {
         random = new Random(System.currentTimeMillis() + playerCount);
         playerCount++;
         flagsSeen = new ArrayList<>();
+        lineSeen = new ArrayList<>();
         closestFlag = null;
         closestFlagDirection = 0;
         closestFlagDistance = 0;
@@ -125,13 +131,14 @@ public abstract class Player implements ControllerPlayer {
         canSeeOtherGoal = false;
         canSeeNothing = true;
         flagsSeen.clear();
-        lineSeen = null;
+        lineSeen.clear();
         playerDirection = 0;
         closestPlayer = null;
         closestPlayerDistance = Double.MAX_VALUE;
         closestPlayerDirection = 0;
         closestPlayerOtherDistance = Double.MAX_VALUE;
         closestPlayerOtherDirection = 0;
+        distanceBall = Double.MAX_VALUE;
     }
 
     /** {@inheritDoc} */
@@ -293,6 +300,32 @@ public abstract class Player implements ControllerPlayer {
         }
     }
 
+    protected void shootTowardsClosestPlayer()
+    {
+        if(closestPlayer != null)
+        {
+            checksBothSides = -1;
+            getPlayer().kick(70, closestPlayerDirection);
+            startBlackList(5);
+        }
+        else if (checksBothSides == -1)
+        {
+            checksBothSides = 0;
+            getPlayer().turn(90);
+        }
+        else if(checksBothSides == 0)
+        {
+            checksBothSides = 1;
+            getPlayer().turn(-180);
+
+        }
+        else
+        {
+            checksBothSides = -1;
+            getPlayer().kick(50, directionOwnGoal);
+        }
+    }
+    
     /** {@inheritDoc} */
     @Override
     public void infoSeeFlagPenaltyOwn(Flag flag, double distance, double direction, double distChange,
@@ -366,7 +399,7 @@ public abstract class Player implements ControllerPlayer {
     public void infoSeeLine(Line line, double distance, double direction, double distChange, double dirChange,
                             double bodyFacingDirection, double headFacingDirection) {
         canSeeNothing = false;
-        lineSeen = line;
+        lineSeen.add(new LineObject(line, direction, distance));
         
         if(line == Line.RIGHT) {
             if(direction > 0)
@@ -469,6 +502,10 @@ public abstract class Player implements ControllerPlayer {
     @Override
     public void infoHearPlayMode(PlayMode playMode) {
         currentPlayMode = playMode;
+        
+        if (playMode == PlayMode.BEFORE_KICK_OFF) {
+            getPlayer().move(startingX, startingY);
+        }
     }
     
     /** {@inheritDoc} */

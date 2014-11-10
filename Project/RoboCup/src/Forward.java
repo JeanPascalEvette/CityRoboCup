@@ -35,6 +35,14 @@ public class Forward extends Player {
         directionCenterLine = Double.MAX_VALUE;
         random = new Random(System.currentTimeMillis() + count);
         forwardId = count++;
+        switch (forwardId) {
+                case 0 :
+                    startingX = -10;startingY = 10;
+                    break;
+                case 1 :
+                    startingX = -10;startingY = -10;
+                    break;
+            }
     }
 
    /** {@inheritDoc} */
@@ -62,31 +70,6 @@ public class Forward extends Player {
         return "Forward";
     }
 
-    protected void shootTowardsClosestPlayer()
-    {
-        if(closestPlayer != null)
-        {
-            checksBothSides = -1;
-            getPlayer().kick(70, closestPlayerDirection);
-            startBlackList(2);
-        }
-        else if (checksBothSides == -1)
-        {
-            checksBothSides = 0;
-            getPlayer().turn(90);
-        }
-        else if(checksBothSides == 0)
-        {
-            checksBothSides = 1;
-            getPlayer().turn(-180);
-
-        }
-        else
-        {
-            checksBothSides = -1;
-            getPlayer().turn(90);
-        }
-    }
     
     /**
      * This is the action performed when the player can see the ball.
@@ -117,7 +100,7 @@ public class Forward extends Player {
                     }
                     else
                     {
-                        getPlayer().turn(60);
+                        getPlayer().dash(60);
                     }
                 }
             }
@@ -136,7 +119,7 @@ public class Forward extends Player {
             }
             else
             {
-                getPlayer().turn(60);
+                getPlayer().dash(20);
             }
         }
     }
@@ -162,21 +145,6 @@ public class Forward extends Player {
     @Override
     public void infoHearPlayMode(PlayMode playMode) {
         super.infoHearPlayMode(playMode);
-        if (playMode == PlayMode.BEFORE_KICK_OFF
-                || playMode == PlayMode.KICK_OFF_OTHER
-                || playMode == PlayMode.KICK_OFF_OWN) {
-            this.pause(1000);
-            switch (forwardId) {
-                case 0 :
-                    this.getPlayer().move(-10, -10);
-                    break;
-                case 1 :
-                    this.getPlayer().move(-10, 10);
-                    break;
-                default :
-                    throw new Error("number must be initialized before move");
-            }
-        }
     }
 
     /** {@inheritDoc} */
@@ -191,14 +159,52 @@ public class Forward extends Player {
 
     
     private void goDefaultPos() {
-        if(directionCenterLine != Double.MAX_VALUE)
+        if ((m_position != null && m_position.x < startingX - 5)) {
+            getPlayer().turn(directionOtherGoal);
+            getPlayer().dash(20);
+        }
+        else if ((m_position != null && m_position.x > startingX + 5)) {
+            getPlayer().turn(directionOwnGoal);
+            getPlayer().dash(20);
+        }
+        else if ((m_position != null && m_position.y < startingY - 5)) {
+            LineObject up = null;
+            for(LineObject l : lineSeen)
+            {
+                if(l.line == Line.LEFT)
+                    up = l;
+            }
+            if(up == null) getPlayer().turn(90);
+            else
+            {
+            getPlayer().turn(up.direction);
+            getPlayer().dash(20);
+            }
+        }else if ((m_position != null && m_position.y > startingY + 5)) {
+            LineObject down = null;
+            for(LineObject l : lineSeen)
+            {
+                if(l.line == Line.RIGHT)
+                    down = l;
+            }
+            if(down == null) getPlayer().turn(90);
+            else
+            {
+            getPlayer().turn(down.direction);
+            getPlayer().dash(20);
+            }
+        } else if(canSeeOwnGoal){
+            getPlayer().turn(180);
+        }
+        else if(leftRight)
         {
-            getPlayer().turn(directionCenterLine);
-            getPlayer().dash(50);
+            getPlayer().turn(50);
+            leftRight = !leftRight; 
         }
         else
         {
-            getPlayer().turn(90);
+            getPlayer().turn(-50);
+            leftRight = !leftRight;
         }
     }
 }

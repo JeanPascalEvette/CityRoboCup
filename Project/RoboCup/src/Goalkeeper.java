@@ -34,6 +34,8 @@ public class Goalkeeper extends Player {
     public Goalkeeper(ArrayList<Player> t, int number)
     {
         super(t, number);
+        startingX = -50;startingY = 0;
+             
     }
     
     /** {@inheritDoc} */
@@ -50,21 +52,30 @@ public class Goalkeeper extends Player {
     @Override
     public void postInfo() {
         super.postInfo();
-        getPlayer().turn((30));
-//        if (distBall < 10) {
-//            if(canSeeBall)
-//            {
-//                //Go Towards ball
-//            }
-//            else
-//            {
-//                //Turn
-//            }
-//        } else if (distanceGoalOwn > 10) {
-//            //Go towards goal
-//        } else {
-//            //Wait
-//        }
+        if (distBall < 0.7)
+        {
+            getPlayer().catchBall(directionBall);
+            getPlayer().kick(50, closestPlayerDirection);
+        }
+        else if (distBall < 10) {
+            turnTowardBall();
+            getPlayer().dash(100);
+        } else if (distanceGoalOwn > 10 || (m_position != null && m_position.x > -40)) {
+            turnTowardOwnGoal();
+            getPlayer().dash(20);
+        } else if(canSeeOwnGoal){
+            getPlayer().turn(180);
+        }
+        else if(leftRight)
+        {
+            getPlayer().turn(50);
+            leftRight = !leftRight; 
+        }
+        else
+        {
+            getPlayer().turn(-50);
+            leftRight = !leftRight;
+        }
     }
     
 
@@ -73,7 +84,11 @@ public class Goalkeeper extends Player {
     public ActionsPlayer getPlayer() {
         return player;
     }
-
+    
+    public double getDistanceFromBall()
+    {
+        return Double.MAX_VALUE; // Ignore Goalkeeper
+    }
     /** {@inheritDoc} */
     @Override
     public void setPlayer(ActionsPlayer p) {
@@ -104,9 +119,6 @@ public class Goalkeeper extends Player {
     @Override
     public void infoHearPlayMode(PlayMode playMode) {
         super.infoHearPlayMode(playMode);
-        if (playMode == PlayMode.BEFORE_KICK_OFF) {
-            getPlayer().move(-50, 0);
-        }
     }
 
     /** {@inheritDoc} */
