@@ -171,9 +171,4 @@ public class Midfielder extends Player {
         turnTowardOwnGoal();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void infoHearPlayMode(PlayMode playMode) {
-        super.infoHearPlayMode(playMode);
-    }
 }

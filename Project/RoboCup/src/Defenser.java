@@ -44,8 +44,7 @@ public class Defenser extends Player {
         super(t, number);
         random = new Random(System.currentTimeMillis() + count);
         defenserId = count++;
-        
-            switch (defenserId) {
+                    switch (defenserId) {
                 case 0 :
                     startingX = -40;startingY = 15;
                     break;
@@ -59,6 +58,7 @@ public class Defenser extends Player {
                     startingX = -40;startingY = -15;
                     break;
             }
+
     }
 /** {@inheritDoc} */
     @Override
@@ -170,12 +170,6 @@ public class Defenser extends Player {
     protected void canSeeOwnGoalAction() {
         getPlayer().dash(this.randomDashValueFast());
         turnTowardOwnGoal();
-    }
-    
-        /** {@inheritDoc} */
-    @Override
-    public void infoHearPlayMode(PlayMode playMode) {
-        super.infoHearPlayMode(playMode);
     }
 
 }

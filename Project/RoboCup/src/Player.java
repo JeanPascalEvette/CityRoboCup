@@ -46,8 +46,7 @@ public abstract class Player implements ControllerPlayer {
     protected Random            random        = null;
     protected boolean           canSeeOwnGoal = false;
     protected boolean           canSeeNothing = true;
-    protected
-            boolean           canSeeBall    = false;
+    protected boolean           canSeeBall    = false;
     protected double            directionBall;
     protected double            directionOwnGoal;
     protected double            distanceBall;
@@ -65,36 +64,33 @@ public abstract class Player implements ControllerPlayer {
     protected double            closestPlayerOtherDirection = 0;
     protected int               myNumber = -1;
     protected ArrayList<FlagObject>   flagsSeen = null;
+    protected ArrayList<LineObject>   lineSeen = null;
     protected Flag              closestFlag = null;
     protected double            closestFlagDistance = Double.MAX_VALUE;
     protected double            closestFlagDirection = 0;
-    protected ArrayList<LineObject>              lineSeen = null;
     protected PlayMode          currentPlayMode = null;
     protected double            blackListTimer = Double.MIN_VALUE;
-    protected double            direction = 0;
+    protected double            playerDirection = 0;
     protected int               checksBothSides = -1; // -1 = NO - 0 = Checking Left - 1 = Checking Right
-    protected boolean         leftRight = false;
     protected Coords            m_position;
-    protected int               positionLifetime;
-    protected int               closestPlayerLifetime;
-    protected double            speed;
-    
-    
-    protected int            startingX;
-    protected int            startingY;
+    protected double            positionLifetime;
+    protected boolean           leftRight;
+    protected int               startingX, startingY;
     
     /**
      * Constructs a new simple client.
      */
     public Player(ArrayList<Player> t, int number) {
         myTeam = t;
+        leftRight = false;
         myNumber = number;
         random = new Random(System.currentTimeMillis() + playerCount);
         playerCount++;
         flagsSeen = new ArrayList<>();
-        lineSeen = new ArrayList<>();
         closestFlag = null;
         closestFlagDirection = 0;
+        flagsSeen = new ArrayList<>();
+        lineSeen = new ArrayList<>(); 
         closestFlagDistance = 0;
         lastDistanceOtherGoal = new double[2];
         lastDistanceOtherGoal[0] = Double.MAX_VALUE;
@@ -106,9 +102,10 @@ public abstract class Player implements ControllerPlayer {
         closestPlayerOtherDirection = 0;
         closestPlayerOtherDistance = Double.MAX_VALUE;
         
-        m_position = null;
+        distanceOwnGoal= Double.MAX_VALUE;
+        
+        m_position = new Coords(0,0);
         positionLifetime = 0;
-        closestPlayerLifetime = 0;
      }
     
     protected void startBlackList(int time)
@@ -133,26 +130,265 @@ public abstract class Player implements ControllerPlayer {
     public void preInfo() {
         canSeeOwnGoal = false;
         canSeeBall    = false;
+        distanceBall = Double.MAX_VALUE;
         canSeeOtherGoal = false;
         canSeeNothing = true;
         flagsSeen.clear();
         lineSeen.clear();
-        direction = 0;
+        playerDirection = 0;
         closestPlayer = null;
-        if(closestPlayerLifetime < 5)
-            closestPlayerLifetime++;
-        else
-        {
-            closestPlayerDistance = Double.MAX_VALUE;
-            closestPlayerDirection = 0;
-        }
+        closestPlayerDistance = Double.MAX_VALUE;
+        closestPlayerDirection = 0;
         closestPlayerOtherDistance = Double.MAX_VALUE;
         closestPlayerOtherDirection = 0;
-        distanceBall = Double.MAX_VALUE;
-        directionBall = Double.MAX_VALUE;
         
+        if(positionLifetime < 5)
+            positionLifetime++;
+        else
+        {
+            m_position = null;
+        }
+            
     }
-    private void callExpensiveStuff()
+
+    /** {@inheritDoc} */
+    @Override
+    public void postInfo() {
+callExpensiveStuff();
+    }
+
+    public double getDistanceFromBall()
+    {
+        if(blackListTimer > System.nanoTime())
+            return Double.MAX_VALUE;
+        else if(canSeeBall)
+            return distanceBall;
+        else
+            return Double.MAX_VALUE;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void infoSeeFlagRight(Flag flag, double distance, double direction, double distChange, double dirChange,
+                                 double bodyFacingDirection, double headFacingDirection) {
+        canSeeNothing = false;
+        flagsSeen.add(new FlagObject(flag, distance, direction));
+        if(distance < closestFlagDistance)
+        {
+            closestFlag = flag;
+            closestFlagDistance = distance;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void infoSeeFlagLeft(Flag flag, double distance, double direction, double distChange, double dirChange,
+                                double bodyFacingDirection, double headFacingDirection) {
+        canSeeNothing = false;
+        flagsSeen.add(new FlagObject(flag, distance, direction));
+        if(distance < closestFlagDistance)
+        {
+            closestFlag = flag;
+            closestFlagDistance = distance;
+            closestFlagDirection = direction;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void infoSeeFlagOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
+                               double bodyFacingDirection, double headFacingDirection) {
+        canSeeNothing = false;
+        flagsSeen.add(new FlagObject(flag, distance, direction));
+        if(distance < closestFlagDistance)
+        {
+            closestFlag = flag;
+            closestFlagDistance = distance;
+            closestFlagDirection = direction;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void infoSeeFlagOther(Flag flag, double distance, double direction, double distChange, double dirChange,
+                                 double bodyFacingDirection, double headFacingDirection) {
+        canSeeNothing = false;
+        flagsSeen.add(new FlagObject(flag, distance, direction));
+        if(distance < closestFlagDistance)
+        {
+            closestFlag = flag;
+            closestFlagDistance = distance;
+            closestFlagDirection = direction;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void infoSeeFlagCenter(Flag flag, double distance, double direction, double distChange, double dirChange,
+                                  double bodyFacingDirection, double headFacingDirection) {
+        canSeeNothing = false;
+        flagsSeen.add(new FlagObject(flag, distance, direction));
+        if(distance < closestFlagDistance)
+        {
+            closestFlag = flag;
+            closestFlagDistance = distance;
+            closestFlagDirection = direction;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void infoSeeFlagCornerOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
+                                     double bodyFacingDirection, double headFacingDirection) {
+        canSeeNothing = false;
+        flagsSeen.add(new FlagObject(flag, distance, direction));
+        if(distance < closestFlagDistance)
+        {
+            closestFlag = flag;
+            closestFlagDistance = distance;
+            closestFlagDirection = direction;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void infoSeeFlagCornerOther(Flag flag, double distance, double direction, double distChange,
+                                       double dirChange, double bodyFacingDirection, double headFacingDirection) {
+        canSeeNothing = false;
+        flagsSeen.add(new FlagObject(flag, distance, direction));
+        if(distance < closestFlagDistance)
+        {
+            closestFlag = flag;
+            closestFlagDistance = distance;
+            closestFlagDirection = direction;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void infoSeeFlagPenaltyOwn(Flag flag, double distance, double direction, double distChange,
+                                      double dirChange, double bodyFacingDirection, double headFacingDirection) {
+        canSeeNothing = false;
+        flagsSeen.add(new FlagObject(flag, distance, direction));
+        if(distance < closestFlagDistance)
+        {
+            closestFlag = flag;
+            closestFlagDistance = distance;
+            closestFlagDirection = direction;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void infoSeeFlagPenaltyOther(Flag flag, double distance, double direction, double distChange,
+            double dirChange, double bodyFacingDirection, double headFacingDirection) {
+        canSeeNothing = false;
+        flagsSeen.add(new FlagObject(flag, distance, direction));
+        if(distance < closestFlagDistance)
+        {
+            closestFlag = flag;
+            closestFlagDistance = distance;
+            closestFlagDirection = direction;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void infoSeeFlagGoalOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
+                                   double bodyFacingDirection, double headFacingDirection) {
+        canSeeNothing = false;
+        flagsSeen.add(new FlagObject(flag, distance, direction));
+        if(distance < closestFlagDistance)
+        {
+            closestFlag = flag;
+            closestFlagDistance = distance;
+            closestFlagDirection = direction;
+        }
+        if (flag == Flag.CENTER) {
+            this.canSeeOwnGoal    = true;
+            this.distanceOwnGoal  = distance;
+            this.directionOwnGoal = direction;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void infoSeeFlagGoalOther(Flag flag, double distance, double direction, double distChange, double dirChange,
+                                     double bodyFacingDirection, double headFacingDirection) {
+        canSeeNothing = false;
+        flagsSeen.add(new FlagObject(flag, distance, direction));
+        if(distance < closestFlagDistance)
+        {
+            closestFlag = flag;
+            closestFlagDistance = distance;
+            closestFlagDirection = direction;
+        }
+        lastDistanceOtherGoal[0] = lastDistanceOtherGoal[1];
+        lastDistanceOtherGoal[1] = distance;
+        if (flag == Flag.CENTER) {
+            this.canSeeOtherGoal    = true;
+            this.distanceOtherGoal  = distance;
+            this.directionOtherGoal = direction;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void infoSeeLine(Line line, double distance, double direction, double distChange, double dirChange,
+                            double bodyFacingDirection, double headFacingDirection) {
+        canSeeNothing = false;
+        lineSeen.add(new LineObject(line,distance,direction));
+        
+        if(line == Line.RIGHT) {
+            if(direction > 0)
+                playerDirection = -direction;
+            else
+                playerDirection = -direction - 180;
+        }
+        else if(line == Line.LEFT) {
+            if(direction < 0)
+                playerDirection = -direction;
+            else
+                playerDirection = -direction + 180;
+        }	
+        else if(line == Line.OWN) {
+            if(Math.abs(direction) == 90.0)
+                playerDirection = 180.0;
+            else if(direction > 0)
+                playerDirection =  -direction - 90;
+            else if(direction < 0)
+                playerDirection = -direction + 90;
+        }
+        else if(line == Line.OTHER){
+            if(Math.abs(direction) == 90.0)
+                playerDirection = 0.0;
+            else if(direction > 0)
+                playerDirection = -direction + 90;
+            else if(direction < 0)
+                playerDirection = -direction - 90;
+        }
+    }
+
+    
+    /** {@inheritDoc} */
+    @Override
+    public void infoSeePlayerOther(int number, boolean goalie, double distance, double direction, double distChange,
+                                   double dirChange, double bodyFacingDirection, double headFacingDirection) 
+    {
+        if(closestPlayerOtherDistance > distance)
+        {
+            closestPlayerOtherDistance = distance;
+            closestPlayerOtherDirection = direction;
+        }
+    }
+
+    public boolean isGoingForward()
+    {
+        return lastDistanceOtherGoal[0] - lastDistanceOtherGoal[1] < 0;
+    }
+    
+    public int getNumber() { return myNumber; }
+        private void callExpensiveStuff()
     {
         Collections.sort(flagsSeen);
         Collections.sort(lineSeen);
@@ -187,295 +423,7 @@ public abstract class Player implements ControllerPlayer {
             m_position = p1;
             
     }
-    /** {@inheritDoc} */
-    @Override
-    public void postInfo() {
-        callExpensiveStuff();
-        //NYI
-        
-//        if (canSeeNothing) {
-//            canSeeNothingAction();
-//        } else if (canSeeOwnGoal) {
-//            if ((distanceOwnGoal < 40) && (distanceOwnGoal > 10)) {
-//                canSeeOwnGoalAction();
-//            } else if (canSeeBall) {
-//                canSeeBallAction();
-//            } else {
-//                canSeeAnythingAction();
-//            }
-//        } else if (canSeeBall) {
-//            canSeeBallAction();
-//        } else {
-//            canSeeAnythingAction();
-//        }
-    }
 
-    public double getDistanceFromBall()
-    {
-        if(blackListTimer > System.nanoTime())
-            return Double.MAX_VALUE;
-        else
-            return distanceBall;
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void infoSeeFlagRight(Flag flag, double distance, double direction, double distChange, double dirChange,
-                                 double bodyFacingDirection, double headFacingDirection) {
-        canSeeNothing = false;
-        flagsSeen.add(new FlagObject(flag, direction, distance));
-        if(distance < closestFlagDistance)
-        {
-            closestFlag = flag;
-            closestFlagDistance = distance;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void infoSeeFlagLeft(Flag flag, double distance, double direction, double distChange, double dirChange,
-                                double bodyFacingDirection, double headFacingDirection) {
-        canSeeNothing = false;
-        flagsSeen.add(new FlagObject(flag, direction, distance));
-        if(distance < closestFlagDistance)
-        {
-            closestFlag = flag;
-            closestFlagDistance = distance;
-            closestFlagDirection = direction;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void infoSeeFlagOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
-                               double bodyFacingDirection, double headFacingDirection) {
-        canSeeNothing = false;
-        flagsSeen.add(new FlagObject(flag, direction, distance));
-        if(distance < closestFlagDistance)
-        {
-            closestFlag = flag;
-            closestFlagDistance = distance;
-            closestFlagDirection = direction;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void infoSeeFlagOther(Flag flag, double distance, double direction, double distChange, double dirChange,
-                                 double bodyFacingDirection, double headFacingDirection) {
-        canSeeNothing = false;
-        flagsSeen.add(new FlagObject(flag, direction, distance));
-        if(distance < closestFlagDistance)
-        {
-            closestFlag = flag;
-            closestFlagDistance = distance;
-            closestFlagDirection = direction;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void infoSeeFlagCenter(Flag flag, double distance, double direction, double distChange, double dirChange,
-                                  double bodyFacingDirection, double headFacingDirection) {
-        canSeeNothing = false;
-        flagsSeen.add(new FlagObject(flag, direction, distance));
-        if(distance < closestFlagDistance)
-        {
-            closestFlag = flag;
-            closestFlagDistance = distance;
-            closestFlagDirection = direction;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void infoSeeFlagCornerOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
-                                     double bodyFacingDirection, double headFacingDirection) {
-        canSeeNothing = false;
-        flagsSeen.add(new FlagObject(flag, direction, distance));
-        if(distance < closestFlagDistance)
-        {
-            closestFlag = flag;
-            closestFlagDistance = distance;
-            closestFlagDirection = direction;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void infoSeeFlagCornerOther(Flag flag, double distance, double direction, double distChange,
-                                       double dirChange, double bodyFacingDirection, double headFacingDirection) {
-        canSeeNothing = false;
-        flagsSeen.add(new FlagObject(flag, direction, distance));
-        if(distance < closestFlagDistance)
-        {
-            closestFlag = flag;
-            closestFlagDistance = distance;
-            closestFlagDirection = direction;
-        }
-    }
-
-    protected void shootTowardsClosestPlayer()
-    {
-                getPlayer().say("kicking!");
-        if(closestPlayerDirection != Double.MAX_VALUE)
-        {
-            checksBothSides = -1;
-            getPlayer().turn(directionBall);
-            getPlayer().kick(70, closestPlayerDirection);
-            startBlackList(3);
-        }
-        else if (checksBothSides == -1)
-        {
-            checksBothSides = 0;
-            getPlayer().turn(90);
-        }
-        else if(checksBothSides == 0)
-        {
-            checksBothSides = 1;
-            getPlayer().turn(-180);
-
-        }
-        else
-        {
-            checksBothSides = -1;
-            getPlayer().kick(50, directionOwnGoal);
-        }
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void infoSeeFlagPenaltyOwn(Flag flag, double distance, double direction, double distChange,
-                                      double dirChange, double bodyFacingDirection, double headFacingDirection) {
-        canSeeNothing = false;
-        flagsSeen.add(new FlagObject(flag, direction, distance));
-        if(distance < closestFlagDistance)
-        {
-            closestFlag = flag;
-            closestFlagDistance = distance;
-            closestFlagDirection = direction;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void infoSeeFlagPenaltyOther(Flag flag, double distance, double direction, double distChange,
-            double dirChange, double bodyFacingDirection, double headFacingDirection) {
-        canSeeNothing = false;
-        flagsSeen.add(new FlagObject(flag, direction, distance));
-        if(distance < closestFlagDistance)
-        {
-            closestFlag = flag;
-            closestFlagDistance = distance;
-            closestFlagDirection = direction;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void infoSeeFlagGoalOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
-                                   double bodyFacingDirection, double headFacingDirection) {
-        canSeeNothing = false;
-        flagsSeen.add(new FlagObject(flag, direction, distance));
-        if(distance < closestFlagDistance)
-        {
-            closestFlag = flag;
-            closestFlagDistance = distance;
-            closestFlagDirection = direction;
-        }
-        if (flag == Flag.CENTER) {
-            this.canSeeOwnGoal    = true;
-            this.distanceOwnGoal  = distance;
-            this.directionOwnGoal = direction;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void infoSeeFlagGoalOther(Flag flag, double distance, double direction, double distChange, double dirChange,
-                                     double bodyFacingDirection, double headFacingDirection) {
-        canSeeNothing = false;
-        flagsSeen.add(new FlagObject(flag, direction, distance));
-        if(distance < closestFlagDistance)
-        {
-            closestFlag = flag;
-            closestFlagDistance = distance;
-            closestFlagDirection = direction;
-        }
-        lastDistanceOtherGoal[0] = lastDistanceOtherGoal[1];
-        lastDistanceOtherGoal[1] = distance;
-        if (flag == Flag.CENTER) {
-            this.canSeeOtherGoal    = true;
-            this.distanceOtherGoal  = distance;
-            this.directionOtherGoal = direction;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void infoSeeLine(Line line, double distance, double direction, double distChange, double dirChange,
-                            double bodyFacingDirection, double headFacingDirection) {
-        canSeeNothing = false;
-        lineSeen.add(new LineObject(line, direction, distance));
-        
-        /*
-        if(line == Line.RIGHT) {
-            if(direction > 0)
-                direction = -direction;
-            else
-                playerDirection = -direction - 180;
-        }
-        else if(line == Line.LEFT) {
-            if(direction < 0)
-                playerDirection = -direction;
-            else
-                playerDirection = -direction + 180;
-        }	
-        else if(line == Line.OWN) {
-            if(Math.abs(direction) == 90.0)
-                playerDirection = 180.0;
-            else if(direction > 0)
-                playerDirection =  -direction - 90;
-            else if(direction < 0)
-                playerDirection = -direction + 90;
-        }
-        else if(line == Line.OTHER){
-            if(Math.abs(direction) == 90.0)
-                playerDirection = 0.0;
-            else if(direction > 0)
-                playerDirection = -direction + 90;
-            else if(direction < 0)
-                playerDirection = -direction - 90;
-        }
-        */
-    }
-
-
-    protected Coords getPosition() {
-        {
-            return(Tools.getPlayerPosition(flagsSeen, direction));
-        }
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void infoSeePlayerOther(int number, boolean goalie, double distance, double direction, double distChange,
-                                   double dirChange, double bodyFacingDirection, double headFacingDirection) 
-    {
-        if(closestPlayerOtherDistance > distance)
-        {
-            closestPlayerOtherDistance = distance;
-            closestPlayerOtherDirection = direction;
-        }
-    }
-
-    public boolean isGoingForward()
-    {
-        return lastDistanceOtherGoal[0] - lastDistanceOtherGoal[1] < 0;
-    }
-    
-    public int getNumber() { return myNumber; }
-    
     /** {@inheritDoc} */
     @Override
     public void infoSeePlayerOwn(int number, boolean goalie, double distance, double direction, double distChange,
@@ -485,7 +433,6 @@ public abstract class Player implements ControllerPlayer {
         {
             closestPlayerDistance = distance;
             closestPlayerDirection = direction;
-            closestPlayerLifetime = 0;
             for(Player p : myTeam)
             {
                 if(p.getNumber() == number)
@@ -498,17 +445,9 @@ public abstract class Player implements ControllerPlayer {
     
     protected boolean checkIfClosestToBall()
     {
-        getPlayer().say("Checking if closest !");
         for(Player p : myTeam)
-        {
             if(p != this && p.getDistanceFromBall() < getDistanceFromBall())
                 return false;
-            else if(p != this && p.getDistanceFromBall() == getDistanceFromBall())
-            {
-                if(p.getNumber() > getNumber())
-                    return false;
-            }
-        }
         return true;
     }
 
@@ -530,9 +469,35 @@ public abstract class Player implements ControllerPlayer {
     @Override
     public void infoHearPlayMode(PlayMode playMode) {
         currentPlayMode = playMode;
-        
         if (playMode == PlayMode.BEFORE_KICK_OFF) {
             getPlayer().move(startingX, startingY);
+        }
+    }
+    
+
+    protected void shootTowardsClosestPlayer()
+    {
+        if(closestPlayer != null)
+        {
+            checksBothSides = -1;
+            getPlayer().kick(70, closestPlayerDirection);
+            startBlackList(2);
+        }
+        else if (checksBothSides == -1)
+        {
+            checksBothSides = 0;
+            getPlayer().turn(90);
+        }
+        else if(checksBothSides == 0)
+        {
+            checksBothSides = 1;
+            getPlayer().turn(-180);
+
+        }
+        else
+        {
+            checksBothSides = -1;
+            getPlayer().turn(90);
         }
     }
     
@@ -546,10 +511,7 @@ public abstract class Player implements ControllerPlayer {
     public void infoSenseBody(ViewQuality viewQuality, ViewAngle viewAngle, double stamina, double unknown,
                               double effort, double speedAmount, double speedDirection, double headAngle,
                               int kickCount, int dashCount, int turnCount, int sayCount, int turnNeckCount,
-                              int catchCount, int moveCount, int changeViewCount) {
-        speed = speedAmount;
-        direction = speedDirection;
-    }
+                              int catchCount, int moveCount, int changeViewCount) {}
 
     /** {@inheritDoc} */
     @Override

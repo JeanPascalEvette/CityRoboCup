@@ -56,11 +56,10 @@ public class Forward extends Player {
     @Override
     public void postInfo() {
         super.postInfo();
-        if (canSeeBall && distanceBall != Double.MAX_VALUE) {
+        if (canSeeBall) {
             canSeeBallAction();
         } else {
-            getPlayer().turn(90);
-            //canSeeNothingAction();
+            canSeeNothingAction();
         }
     }
 
@@ -70,30 +69,18 @@ public class Forward extends Player {
     public String getType() {
         return "Forward";
     }
-
     
     /**
      * This is the action performed when the player can see the ball.
      * It involves running at it and kicking it...
      */
     protected void canSeeBallAction() {  
-        
-                   
         if(checkIfClosestToBall()) // Trying to figure out if he can get the ball
         {
-            
-            if(getPlayer().isTeamEast())
-            {
-                getPlayer().say(this.forwardId+" going for it !");
-                getPlayer().say("distanceBall="+distanceBall + " - "+ (distanceBall < 0.7));
-            }
-            if (distanceBall < 0.7) 
-            { // Can shoot
-                getPlayer().say(this.forwardId+" will kick it!");
+            if (distanceBall < 0.7) { // Can shoot
                 if (currentPlayMode == PlayMode.FREE_KICK_FAULT_OWN || 
                         currentPlayMode == PlayMode.FREE_KICK_OWN || 
-                        currentPlayMode == PlayMode.KICK_OFF_OWN) 
-                {
+                        currentPlayMode == PlayMode.KICK_OFF_OWN) {
                     shootTowardsClosestPlayer();
                 }
                 else if(closestPlayerOtherDistance < 1.5)
@@ -118,9 +105,8 @@ public class Forward extends Player {
             }
             else
             {
-                getPlayer().say(this.forwardId+" cannot kick it!");
-                getPlayer().turn(directionBall);
-                getPlayer().dash(100);
+            turnTowardBall();
+            getPlayer().dash(100);
             }
         }
         else // Not allowed to get the ball, do something else
@@ -132,7 +118,7 @@ public class Forward extends Player {
             }
             else
             {
-                goDefaultPos();
+                getPlayer().turn(60);
             }
         }
     }
@@ -143,13 +129,7 @@ public class Forward extends Player {
      * If the player can see nothing, it turns 180 degrees.
      */
     protected void canSeeNothingAction() {
-        if(m_position != null)
-            goDefaultPos();
-        else
-        {
-            getPlayer().say("NOTHINGELSE!");
-            getPlayer().turn(90);
-        }
+        goDefaultPos();
     }
 
     /**
@@ -160,11 +140,6 @@ public class Forward extends Player {
         turnTowardOwnGoal();
     }
     
-     /** {@inheritDoc} */
-    @Override
-    public void infoHearPlayMode(PlayMode playMode) {
-        super.infoHearPlayMode(playMode);
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -178,47 +153,13 @@ public class Forward extends Player {
 
     
     private void goDefaultPos() {
-        getPlayer().say("GOing to default pos!");
-        if ((m_position != null && m_position.x < startingX - 5)) {
-            getPlayer().turn(directionOtherGoal);
-            getPlayer().dash(20);
-        }
-        else if ((m_position != null && m_position.x > startingX + 5)) {
-            getPlayer().turn(directionOwnGoal);
-            getPlayer().dash(20);
-        }
-        else if ((m_position != null && m_position.y < startingY - 5)) {
-            LineObject up = null;
-            for(LineObject l : lineSeen)
-            {
-                if(l.line == Line.LEFT)
-                    up = l;
-            }
-            if(up == null) getPlayer().turn(90);
-            else
-            {
-            getPlayer().turn(up.direction);
-            getPlayer().dash(20);
-            }
-        }else if ((m_position != null && m_position.y > startingY + 5)) {
-            LineObject down = null;
-            for(LineObject l : lineSeen)
-            {
-                if(l.line == Line.RIGHT)
-                    down = l;
-            }
-            if(down == null) getPlayer().turn(90);
-            else
-            {
-            getPlayer().turn(down.direction);
-            getPlayer().dash(20);
-            }
-        } else if(canSeeOwnGoal){
-            getPlayer().turn(180);
+        if(directionCenterLine != Double.MAX_VALUE)
+        {
+            getPlayer().turn(directionCenterLine);
+            getPlayer().dash(50);
         }
         else
         {
-            getPlayer().say("ELSE");
             getPlayer().turn(90);
         }
     }

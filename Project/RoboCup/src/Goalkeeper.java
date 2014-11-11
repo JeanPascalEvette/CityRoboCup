@@ -27,24 +27,20 @@ import java.util.HashMap;
  * @author Atan
  */
 public class Goalkeeper extends Player {
-    private double        distBall    = 1000;
     private double        minDistLine = 9;
-    private double        distanceGoalOwn = 0;
 
     public Goalkeeper(ArrayList<Player> t, int number)
     {
         super(t, number);
         startingX = -50;startingY = 0;
-             
+      
     }
     
     /** {@inheritDoc} */
     @Override
     public void preInfo() {
         super.preInfo();
-        distBall    = 1000;
         minDistLine = 1000;
-        distanceGoalOwn = 0;
 
     }
 
@@ -52,18 +48,19 @@ public class Goalkeeper extends Player {
     @Override
     public void postInfo() {
         super.postInfo();
-        if (distBall < 0.7)
+        if (distanceBall < 0.7)
         {
             getPlayer().catchBall(directionBall);
             getPlayer().kick(50, closestPlayerDirection);
         }
-        else if (distBall < 10) {
+        else if (distanceBall < 5) {
             turnTowardBall();
             getPlayer().dash(100);
-        } else if (distanceGoalOwn > 10 || (m_position != null && m_position.x > -40)) {
+        } else if ((distanceOwnGoal != Double.MAX_VALUE && distanceOwnGoal > 10) || (m_position != null && m_position.x > -40)) {
             turnTowardOwnGoal();
+            getPlayer().say("!goal "+distanceOwnGoal+" - "+m_position.x);
             getPlayer().dash(20);
-        } else if(canSeeOwnGoal){
+       } else if(!canSeeOwnGoal){
             getPlayer().turn(180);
         }
         else if(leftRight)
@@ -84,11 +81,7 @@ public class Goalkeeper extends Player {
     public ActionsPlayer getPlayer() {
         return player;
     }
-    
-    public double getDistanceFromBall()
-    {
-        return Double.MAX_VALUE; // Ignore Goalkeeper
-    }
+
     /** {@inheritDoc} */
     @Override
     public void setPlayer(ActionsPlayer p) {
@@ -115,11 +108,6 @@ public class Goalkeeper extends Player {
         }
     }
     
-    /** {@inheritDoc} */
-    @Override
-    public void infoHearPlayMode(PlayMode playMode) {
-        super.infoHearPlayMode(playMode);
-    }
 
     /** {@inheritDoc} */
     @Override
