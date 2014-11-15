@@ -106,7 +106,10 @@ public class Forward extends Player {
             else
             {
             turnTowardBall();
-            getPlayer().dash(100);
+            int distDash = 100;
+            if(distanceBall < 3)
+                distDash = 60;
+            getPlayer().dash(distDash);
             }
         }
         else // Not allowed to get the ball, do something else

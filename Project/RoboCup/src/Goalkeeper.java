@@ -27,7 +27,6 @@ import java.util.HashMap;
  * @author Atan
  */
 public class Goalkeeper extends Player {
-    private double        minDistLine = 9;
 
     public Goalkeeper(ArrayList<Player> t, int number)
     {
@@ -40,7 +39,6 @@ public class Goalkeeper extends Player {
     @Override
     public void preInfo() {
         super.preInfo();
-        minDistLine = 1000;
 
     }
 
@@ -56,11 +54,12 @@ public class Goalkeeper extends Player {
         else if (distanceBall < 5) {
             turnTowardBall();
             getPlayer().dash(100);
-        } else if ((distanceOwnGoal != Double.MAX_VALUE && distanceOwnGoal > 10) || (m_position != null && m_position.x > -40)) {
-            turnTowardOwnGoal();
-            getPlayer().say("!goal "+distanceOwnGoal+" - "+m_position.x);
+        } else if (!canSeeFlagPenaltyOwn || (m_position != null && m_position.x > -40)) {
+            getPlayer().turn(180);
+//            if(m_position != null)
+//            getPlayer().say("!goal "+distanceOwnGoal+" - "+m_position.x);
             getPlayer().dash(20);
-       } else if(!canSeeOwnGoal){
+       } else if(canSeeOwnGoal && distanceOwnGoal < 2){
             getPlayer().turn(180);
         }
         else if(leftRight)
@@ -86,15 +85,6 @@ public class Goalkeeper extends Player {
     @Override
     public void setPlayer(ActionsPlayer p) {
         player = p;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void infoSeeLine(Line line, double distance, double direction, double distChange, double dirChange,
-                            double bodyFacingDirection, double headFacingDirection) {
-        if (distance < minDistLine) {
-            minDistLine = distance;
-        }
     }
 
     

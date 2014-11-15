@@ -29,38 +29,37 @@ public class Coach implements ControllerCoach {
     /** {@inheritDoc} */
     @Override
     public void infoHearError(Errors error) {
-        log.error(error);
-        getCoach().say("test123");
-    }
+        //log.error(error);
+          }
 
     /** {@inheritDoc} */
     @Override
     public void infoHearOk(Ok ok) {
-        log.info(ok);
+        //log.info(ok);
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoHearPlayMode(PlayMode playMode) {
-        log.info(playMode);
+        //log.info(playMode);
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoHearPlayer(double direction, String message) {
-        log.info(message + "from " + direction);
+        //log.info(message + "from " + direction);
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoHearReferee(RefereeMessage refereeMessage) {
-        log.info(refereeMessage);
+        //log.info(refereeMessage);
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoHearWarning(Warning warning) {
-        log.warn(warning);
+        //log.warn(warning);
     }
 
     /** {@inheritDoc} */
@@ -101,7 +100,7 @@ public class Coach implements ControllerCoach {
     @Override
     public void infoServerParam(HashMap<ServerParams, Object> info) {
         log.info("server param");
-        coach.teamGraphic(new XPMImageAtanLogo());
+        //coach.teamGraphic(new XPMImageAtanLogo());
     }
 
     /** {@inheritDoc} */

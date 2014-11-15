@@ -76,6 +76,7 @@ public abstract class Player implements ControllerPlayer {
     protected double            positionLifetime;
     protected boolean           leftRight;
     protected int               startingX, startingY;
+    protected boolean              canSeeFlagPenaltyOwn;
     
     /**
      * Constructs a new simple client.
@@ -110,7 +111,7 @@ public abstract class Player implements ControllerPlayer {
     
     protected void startBlackList(int time)
     {
-        blackListTimer = System.nanoTime() + (time*1000);
+        //blackListTimer = System.nanoTime() + (time*1000);
     }
 
     /** {@inheritDoc} */
@@ -129,6 +130,7 @@ public abstract class Player implements ControllerPlayer {
     @Override
     public void preInfo() {
         canSeeOwnGoal = false;
+        canSeeFlagPenaltyOwn = false;
         canSeeBall    = false;
         distanceBall = Double.MAX_VALUE;
         canSeeOtherGoal = false;
@@ -269,6 +271,7 @@ callExpensiveStuff();
     public void infoSeeFlagPenaltyOwn(Flag flag, double distance, double direction, double distChange,
                                       double dirChange, double bodyFacingDirection, double headFacingDirection) {
         canSeeNothing = false;
+        canSeeFlagPenaltyOwn = true;
         flagsSeen.add(new FlagObject(flag, distance, direction));
         if(distance < closestFlagDistance)
         {
@@ -477,6 +480,7 @@ callExpensiveStuff();
 
     protected void shootTowardsClosestPlayer()
     {
+        
         if(closestPlayer != null)
         {
             checksBothSides = -1;
@@ -486,18 +490,20 @@ callExpensiveStuff();
         else if (checksBothSides == -1)
         {
             checksBothSides = 0;
+            getPlayer().dash(-100);
             getPlayer().turn(90);
         }
         else if(checksBothSides == 0)
         {
             checksBothSides = 1;
+            getPlayer().dash(-100);
             getPlayer().turn(-180);
 
         }
         else
         {
             checksBothSides = -1;
-            getPlayer().turn(90);
+            getPlayer().kick(50,-90);
         }
     }
     

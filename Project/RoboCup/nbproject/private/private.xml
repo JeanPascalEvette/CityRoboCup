@@ -3,12 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/jpevette/Documents/GitHub/Old/CityRoboCup-1e8fdbc9cb22178a6b90a7b3ffd45ae1576a3c73/Project/RoboCup/src/Midfielder.java</file>
-            <file>file:/C:/Users/jpevette/Documents/GitHub/Old/CityRoboCup-1e8fdbc9cb22178a6b90a7b3ffd45ae1576a3c73/Project/RoboCup/src/Player.java</file>
-            <file>file:/C:/Users/jpevette/Documents/GitHub/Old/CityRoboCup-1e8fdbc9cb22178a6b90a7b3ffd45ae1576a3c73/Project/RoboCup/src/Goalkeeper.java</file>
-            <file>file:/C:/Users/jpevette/Documents/GitHub/Old/CityRoboCup-1e8fdbc9cb22178a6b90a7b3ffd45ae1576a3c73/Project/RoboCup/src/Forward.java</file>
-            <file>file:/C:/Users/jpevette/Documents/GitHub/Old/CityRoboCup-1e8fdbc9cb22178a6b90a7b3ffd45ae1576a3c73/Project/RoboCup/src/Tools.java</file>
-            <file>file:/C:/Users/jpevette/Documents/GitHub/Old/CityRoboCup-1e8fdbc9cb22178a6b90a7b3ffd45ae1576a3c73/Project/RoboCup/src/Defenser.java</file>
+            <file>file:/C:/Users/jpevette/Documents/GitHub/CityRoboCup/Project/RoboCup/src/FlagObject.java</file>
+            <file>file:/C:/Users/jpevette/Documents/GitHub/CityRoboCup/Project/RoboCup/src/Coach.java</file>
+            <file>file:/C:/Users/jpevette/Documents/GitHub/CityRoboCup/Project/RoboCup/src/Team.java</file>
+            <file>file:/C:/Users/jpevette/Documents/GitHub/CityRoboCup/Project/RoboCup/src/Forward.java</file>
+            <file>file:/C:/Users/jpevette/Documents/GitHub/CityRoboCup/Project/RoboCup/src/Player.java</file>
+            <file>file:/C:/Users/jpevette/Documents/GitHub/CityRoboCup/Project/RoboCup/src/Midfielder.java</file>
+            <file>file:/C:/Users/jpevette/Documents/GitHub/CityRoboCup/Project/RoboCup/src/Defenser.java</file>
+            <file>file:/C:/Users/jpevette/Documents/GitHub/CityRoboCup/Project/RoboCup/src/Goalkeeper.java</file>
         </group>
     </open-files>
 </project-private>
