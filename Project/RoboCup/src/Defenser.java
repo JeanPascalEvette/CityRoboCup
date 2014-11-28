@@ -70,20 +70,20 @@ public class Defenser extends Player {
     @Override
     public void postInfo() {
         super.postInfo();
-        if (distanceBall < 0.7)
+        if (distanceBall < 0.7) // If you are in shooting range
         {
-            if(closestPlayerOtherDistance < 3)
+            if(closestPlayerOtherDistance < 3) // If an opponent is close passs it to a teammate
                 shootTowardsClosestPlayer();
-            else
+            else // else  go towards the opponents goal
             {
                 getPlayer().turn(directionOtherGoal);
                 getPlayer().dash(50);
             }
-        }
+        } // else check if you are the closest player to the ball and go for it
         else if (checkIfClosestToBall()) {
             turnTowardBall();
             getPlayer().dash(100);
-        } 
+        }  // Else try to return to your original position
         else if ((m_position != null && m_position.x < startingX - 5)) {
             getPlayer().turn(directionOtherGoal);
             getPlayer().dash(20);
@@ -118,10 +118,10 @@ public class Defenser extends Player {
             getPlayer().turn(down.direction);
             getPlayer().dash(20);
             }
-        } else if(canSeeOwnGoal){
+        } else if(canSeeOwnGoal){// If you are at your original position but looking the wrong way turn around
             getPlayer().turn(180);
         }
-        else
+        else // If you are at your original position and looking the right way look around for the ball
         {
             getPlayer().turn(90);
         }

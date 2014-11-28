@@ -20,13 +20,13 @@ public class Simple2Run {
     public static void main(String[] args) {
         BasicConfigurator.configure();
         if (args.length == 0) {
-            AbstractTeam team = new Team("Simple2", 6000, "localhost", true);
+            AbstractTeam team = new Team("Real_Paris_F.C", 6000, "localhost", true);
             team.connectAll();
         } else {
             Integer      val      = new Integer(args[0]);
             int          port     = val.intValue();
             String       hostname = args[1];
-            AbstractTeam team     = new Team("Simple2", port, hostname, true);
+            AbstractTeam team     = new Team("Real_Paris_F.C", port, hostname, true);
             team.connectAll();
         }
     }

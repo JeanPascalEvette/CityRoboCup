@@ -21,12 +21,12 @@ public class Simple1Run {
         BasicConfigurator.configure();
         AbstractTeam team = null;
         if (args.length == 0) {
-            team = new Team("Kamarao", 6000, "localhost", true);
+            team = new Team("MadridSG", 6000, "localhost", true);
         } else {
             Integer val      = new Integer(args[0]);
             int     port     = val.intValue();
             String  hostname = args[1];
-            team = new Team("Simple1", port, hostname, true);
+            team = new Team("MadridSG", port, hostname, true);
         }
         team.connectAll();
     }

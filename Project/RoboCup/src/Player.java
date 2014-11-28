@@ -82,18 +82,17 @@ public abstract class Player implements ControllerPlayer {
      * Constructs a new simple client.
      */
     public Player(ArrayList<Player> t, int number) {
-        myTeam = t;
+        myTeam = t;//My Team controls the list of players
         leftRight = false;
         myNumber = number;
         random = new Random(System.currentTimeMillis() + playerCount);
         playerCount++;
-        flagsSeen = new ArrayList<>();
-        closestFlag = null;
+        flagsSeen = new ArrayList<>(); //list of flags currently in players vision
+        closestFlag = null; 
         closestFlagDirection = 0;
-        flagsSeen = new ArrayList<>();
-        lineSeen = new ArrayList<>(); 
+        lineSeen = new ArrayList<>();// list of lines currently in players vision 
         closestFlagDistance = 0;
-        lastDistanceOtherGoal = new double[2];
+        lastDistanceOtherGoal = new double[2];// This records the last distance of the opponents goal
         lastDistanceOtherGoal[0] = Double.MAX_VALUE;
         lastDistanceOtherGoal[1] = Double.MAX_VALUE;
         
@@ -105,7 +104,7 @@ public abstract class Player implements ControllerPlayer {
         
         distanceOwnGoal= Double.MAX_VALUE;
         
-        m_position = new Coords(0,0);
+        m_position = new Coords(0,0);//calculated based on the position of the flags
         positionLifetime = 0;
      }
     
@@ -129,6 +128,7 @@ public abstract class Player implements ControllerPlayer {
     /** {@inheritDoc} */
     @Override
     public void preInfo() {
+        //reset every sensor data
         canSeeOwnGoal = false;
         canSeeFlagPenaltyOwn = false;
         canSeeBall    = false;
@@ -161,6 +161,7 @@ callExpensiveStuff();
 
     public double getDistanceFromBall()
     {
+        //return the distance of ball. If unknown or player has shot recently return max value.
         if(blackListTimer > System.nanoTime())
             return Double.MAX_VALUE;
         else if(canSeeBall)
@@ -173,6 +174,8 @@ callExpensiveStuff();
     @Override
     public void infoSeeFlagRight(Flag flag, double distance, double direction, double distChange, double dirChange,
                                  double bodyFacingDirection, double headFacingDirection) {
+        
+        //Record the flag in the list
         canSeeNothing = false;
         flagsSeen.add(new FlagObject(flag, distance, direction));
         if(distance < closestFlagDistance)
@@ -186,6 +189,7 @@ callExpensiveStuff();
     @Override
     public void infoSeeFlagLeft(Flag flag, double distance, double direction, double distChange, double dirChange,
                                 double bodyFacingDirection, double headFacingDirection) {
+        //Record the flag in the list
         canSeeNothing = false;
         flagsSeen.add(new FlagObject(flag, distance, direction));
         if(distance < closestFlagDistance)
@@ -200,6 +204,7 @@ callExpensiveStuff();
     @Override
     public void infoSeeFlagOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
                                double bodyFacingDirection, double headFacingDirection) {
+        //Record the flag in the list
         canSeeNothing = false;
         flagsSeen.add(new FlagObject(flag, distance, direction));
         if(distance < closestFlagDistance)
@@ -214,6 +219,7 @@ callExpensiveStuff();
     @Override
     public void infoSeeFlagOther(Flag flag, double distance, double direction, double distChange, double dirChange,
                                  double bodyFacingDirection, double headFacingDirection) {
+        //Record the flag in the list
         canSeeNothing = false;
         flagsSeen.add(new FlagObject(flag, distance, direction));
         if(distance < closestFlagDistance)
@@ -228,6 +234,7 @@ callExpensiveStuff();
     @Override
     public void infoSeeFlagCenter(Flag flag, double distance, double direction, double distChange, double dirChange,
                                   double bodyFacingDirection, double headFacingDirection) {
+        //Record the flag in the list
         canSeeNothing = false;
         flagsSeen.add(new FlagObject(flag, distance, direction));
         if(distance < closestFlagDistance)
@@ -242,6 +249,7 @@ callExpensiveStuff();
     @Override
     public void infoSeeFlagCornerOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
                                      double bodyFacingDirection, double headFacingDirection) {
+        //Record the flag in the list
         canSeeNothing = false;
         flagsSeen.add(new FlagObject(flag, distance, direction));
         if(distance < closestFlagDistance)
@@ -256,6 +264,7 @@ callExpensiveStuff();
     @Override
     public void infoSeeFlagCornerOther(Flag flag, double distance, double direction, double distChange,
                                        double dirChange, double bodyFacingDirection, double headFacingDirection) {
+        //Record the flag in the list
         canSeeNothing = false;
         flagsSeen.add(new FlagObject(flag, distance, direction));
         if(distance < closestFlagDistance)
@@ -270,6 +279,7 @@ callExpensiveStuff();
     @Override
     public void infoSeeFlagPenaltyOwn(Flag flag, double distance, double direction, double distChange,
                                       double dirChange, double bodyFacingDirection, double headFacingDirection) {
+        //Record the flag in the list
         canSeeNothing = false;
         canSeeFlagPenaltyOwn = true;
         flagsSeen.add(new FlagObject(flag, distance, direction));
@@ -285,6 +295,7 @@ callExpensiveStuff();
     @Override
     public void infoSeeFlagPenaltyOther(Flag flag, double distance, double direction, double distChange,
             double dirChange, double bodyFacingDirection, double headFacingDirection) {
+        //Record the flag in the list
         canSeeNothing = false;
         flagsSeen.add(new FlagObject(flag, distance, direction));
         if(distance < closestFlagDistance)
@@ -299,6 +310,7 @@ callExpensiveStuff();
     @Override
     public void infoSeeFlagGoalOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
                                    double bodyFacingDirection, double headFacingDirection) {
+        //Record the flag in the list
         canSeeNothing = false;
         flagsSeen.add(new FlagObject(flag, distance, direction));
         if(distance < closestFlagDistance)
@@ -318,6 +330,7 @@ callExpensiveStuff();
     @Override
     public void infoSeeFlagGoalOther(Flag flag, double distance, double direction, double distChange, double dirChange,
                                      double bodyFacingDirection, double headFacingDirection) {
+        //Record the flag in the list
         canSeeNothing = false;
         flagsSeen.add(new FlagObject(flag, distance, direction));
         if(distance < closestFlagDistance)
@@ -339,6 +352,7 @@ callExpensiveStuff();
     @Override
     public void infoSeeLine(Line line, double distance, double direction, double distChange, double dirChange,
                             double bodyFacingDirection, double headFacingDirection) {
+        //Record the line in the list
         canSeeNothing = false;
         lineSeen.add(new LineObject(line,distance,direction));
         
@@ -378,6 +392,7 @@ callExpensiveStuff();
     public void infoSeePlayerOther(int number, boolean goalie, double distance, double direction, double distChange,
                                    double dirChange, double bodyFacingDirection, double headFacingDirection) 
     {
+        //Record closest players distance
         if(closestPlayerOtherDistance > distance)
         {
             closestPlayerOtherDistance = distance;
@@ -387,15 +402,16 @@ callExpensiveStuff();
 
     public boolean isGoingForward()
     {
+        //check that the player is going towards the right goal
         return lastDistanceOtherGoal[0] - lastDistanceOtherGoal[1] < 0;
     }
     
     public int getNumber() { return myNumber; }
         private void callExpensiveStuff()
     {
-        Collections.sort(flagsSeen);
-        Collections.sort(lineSeen);
-        Coords p1 = Tools.doCircleThingy(flagsSeen, true);
+        Collections.sort(flagsSeen);// this sorts the flags by distance to player
+        Collections.sort(lineSeen); // this sorts the lines by distance to player
+        Coords p1 = Tools.doCircleThingy(flagsSeen, true);//This uses trigonometry calculation
         if(p1 == null)
         {
             if(positionLifetime < 10)
@@ -406,7 +422,7 @@ callExpensiveStuff();
                     positionLifetime = 0;
                 }
         }
-        else if(Math.abs(p1.x) > 54.0 || Math.abs(p1.y) > 32.0)
+        else if(Math.abs(p1.x) > 54.0 || Math.abs(p1.y) > 32.0) //If the point is out of the field then find other points
         {
             p1 = Tools.doCircleThingy(flagsSeen, false);
             if(Math.abs(p1.x) < 54.0 || Math.abs(p1.y) < 32.0)
@@ -432,11 +448,12 @@ callExpensiveStuff();
     public void infoSeePlayerOwn(int number, boolean goalie, double distance, double direction, double distChange,
                                  double dirChange, double bodyFacingDirection, double headFacingDirection) 
     {
+        //Calculates closest team mate
         if(closestPlayerDistance > distance)
         {
             closestPlayerDistance = distance;
             closestPlayerDirection = direction;
-            for(Player p : myTeam)
+            for(Player p : myTeam) 
             {
                 if(p.getNumber() == number)
                 {
@@ -448,6 +465,7 @@ callExpensiveStuff();
     
     protected boolean checkIfClosestToBall()
     {
+        //Checks if another player from my team is closer to the ball than me
         for(Player p : myTeam)
             if(p != this && p.getDistanceFromBall() < getDistanceFromBall())
                 return false;
@@ -480,7 +498,7 @@ callExpensiveStuff();
 
     protected void shootTowardsClosestPlayer()
     {
-        
+     //If the player has seen a team mate shoot towards him    
         if(closestPlayer != null)
         {
             checksBothSides = -1;
@@ -489,6 +507,7 @@ callExpensiveStuff();
         }
         else if (checksBothSides == -1)
         {
+            //else look left and right for a team mate 
             checksBothSides = 0;
             getPlayer().dash(-100);
             getPlayer().turn(90);
@@ -502,6 +521,7 @@ callExpensiveStuff();
         }
         else
         {
+            //else shoot upwards
             checksBothSides = -1;
             getPlayer().kick(50,-90);
         }

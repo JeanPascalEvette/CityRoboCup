@@ -69,21 +69,21 @@ public class Midfielder extends Player {
     @Override
     public void postInfo() {
         super.postInfo();
-        if (distanceBall < 0.7)
+        if (distanceBall < 0.7) // If you are in shooting range
         {
-            if(closestPlayerOtherDistance < 3)
+            if(closestPlayerOtherDistance < 3) // if an opponent is close - pass the ball
                 shootTowardsClosestPlayer();
-            else
+            else // else go towards the opponent#s goal
             {
                 getPlayer().turn(directionOtherGoal);
                 getPlayer().dash(50);
             }
         }
-        else if (checkIfClosestToBall()) {
+        else if (checkIfClosestToBall()) { // Else if you are the closest player to the ball go for it.
             turnTowardBall();
             getPlayer().dash(100);
         } 
-        else if ((m_position != null && m_position.x < startingX - 5)) {
+        else if ((m_position != null && m_position.x < startingX - 5)) { // Else go back to your starting position
             getPlayer().turn(directionOtherGoal);
             getPlayer().dash(20);
         }
@@ -117,10 +117,10 @@ public class Midfielder extends Player {
             getPlayer().turn(down.direction);
             getPlayer().dash(20);
             }
-        } else if(canSeeOwnGoal){
+        } else if(canSeeOwnGoal){ // If you are not looking in the right direction turn around
             getPlayer().turn(180);
         }
-        else
+        else // Else look around for the ball
         {
             getPlayer().turn(90);
         }

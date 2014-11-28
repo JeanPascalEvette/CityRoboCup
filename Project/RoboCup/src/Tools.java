@@ -16,21 +16,10 @@ class Coords {
         double y;
     }
 public class Tools {
-    static Flag[] flagList = {  
-        Flag.LEFT_10,Flag.LEFT_20,Flag.LEFT_30,
-        Flag.OTHER_10,Flag.OTHER_20,Flag.OTHER_30,Flag.OTHER_40,Flag.OTHER_50,
-        Flag.OWN_10,Flag.OWN_20,Flag.OWN_30,Flag.OWN_40,Flag.OWN_50,
-        Flag.RIGHT_10,Flag.RIGHT_20,Flag.RIGHT_30
-                                    };
-    static Coords[] flagValues = {  
-        new Coords(Double.MIN_VALUE,10),new Coords(Double.MIN_VALUE,20),new Coords(Double.MIN_VALUE,30),
-        new Coords(10,Double.MIN_VALUE),new Coords(20,Double.MIN_VALUE),new Coords(30,Double.MIN_VALUE),new Coords(40,Double.MIN_VALUE),new Coords(50,Double.MIN_VALUE),
-        new Coords(-10,Double.MIN_VALUE),new Coords(-20,Double.MIN_VALUE),new Coords(-30,Double.MIN_VALUE),new Coords(-40,Double.MIN_VALUE),new Coords(-50,Double.MIN_VALUE),
-        new Coords(Double.MIN_VALUE,-10),new Coords(Double.MIN_VALUE,-20),new Coords(Double.MIN_VALUE,-30)
-                                    };
-
+ 
     static Coords doCircleThingy(ArrayList<FlagObject> alFlag, boolean plusMinus)
-    {
+    { // THis function draws 2 Circle with Origin on two flags seen by the player and uses their distance as radius.
+        // One of the intersections of the circles should be the position of the player
         FlagObject flag = null;
         FlagObject flag2 = null;
         double minDist = Double.MAX_VALUE;
@@ -64,7 +53,7 @@ public class Tools {
         if(flag == null) return null;
         if(flag2 == null) return null;
         flag.getCoordinates(alFlag);
-        flag2.getCoordinates(alFlag);
+        flag2.getCoordinates(alFlag); // This gets the coordinates of two of the flags seen by the plyer
         if(flag.coordinates == null) return null;
         if(flag2.coordinates == null) return null;
         double x,y;
@@ -74,7 +63,7 @@ public class Tools {
     
     
     static private Coords formula(Coords d1, Coords d2, double dist1, double dist2, boolean plusMinus)
-    {
+    { // THis is based on the formula to find the intersection fo two circles
          
         double d = Math.sqrt(Math.pow((d2.x-d1.x),2)+Math.pow((d2.y-d1.y),2));
         double K = (0.25)*Math.sqrt((d+dist1+dist2)*(-d+dist1+dist2)*(d-dist1+dist2)*(d+dist1-dist2));
