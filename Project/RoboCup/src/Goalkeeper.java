@@ -51,7 +51,7 @@ public class Goalkeeper extends Player {
             getPlayer().catchBall(directionBall);
             getPlayer().kick(50, closestPlayerDirection);
         }
-        else if (distanceBall < 5) { // Else if you can see it go towards it
+        else if (distanceBall < 15) { // Else if you can see it go towards it
             turnTowardBall();
             getPlayer().dash(100);
         } else if (!canSeeFlagPenaltyOwn || (m_position != null && m_position.x > -40)) { // else go back to your starting position
@@ -61,17 +61,19 @@ public class Goalkeeper extends Player {
             getPlayer().dash(20);
        } else if(canSeeOwnGoal && distanceOwnGoal < 2){ // If you are looking the wrong way turn around
             getPlayer().turn(180);
+            leftRight = !leftRight; 
         }
         else if(leftRight) // else look left then right
         {
-            getPlayer().turn(50);
+            getPlayer().turn(90);
             leftRight = !leftRight; 
         }
         else
         {
-            getPlayer().turn(-50);
+            getPlayer().turn(-90);
             leftRight = !leftRight;
         }
+        
     }
     
 

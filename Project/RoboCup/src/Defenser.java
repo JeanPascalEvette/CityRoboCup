@@ -34,8 +34,18 @@ import java.util.Random;
  * @author Atan
  */
 public class Defenser extends Player {
+    
+public enum STATE { // FSM Implementation
+		REST, // Inactive/Default state
+		GOTO_BALL, // Going towards the ball
+		BALL_CARRIER, // Currently carrying the ball
+		ATTACKING, // Not carrying the ball but supporting the attack
+		GO_BACK	//Going back to original position
+	}
     protected static int    count         = 0;
     private int             defenserId    = 0;
+	private STATE myState;
+	private int counter;
 
     /**
      * Constructs a new simple client.

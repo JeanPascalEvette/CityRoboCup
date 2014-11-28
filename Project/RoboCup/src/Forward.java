@@ -119,11 +119,20 @@ Update();
 			myState = STATE.GO_BACK; counter = 0;
 			return;
 		}
-		if(closestPlayerDistance < 1.5) // If some opponent is close try to pass it to a teammate
+                if (currentPlayMode == PlayMode.FREE_KICK_FAULT_OWN || // Avoid passing the ball to yourself if in freekick/kickoff mode
+                        currentPlayMode == PlayMode.FREE_KICK_OWN || 
+                        currentPlayMode == PlayMode.KICK_OFF_OWN) {
+                    shootTowardsClosestPlayer();
+                }
+                else if(canSeeOwnGoal) // If some opponent is close try to pass it to a teammate
+		{
+                    getPlayer().turn(180);
+                }
+                else if(closestPlayerDistance < 1.5) // If some opponent is close try to pass it to a teammate
 		{
 			shootTowardsClosestPlayer();
 		}
-                else if(distanceBall < 0.7 && distanceOtherGoal<15 && directionOtherGoal != Double.MAX_VALUE) // If you are in range of the opponents goal shoot
+                else if(distanceBall < 0.7 && distanceOtherGoal<25 && directionOtherGoal != Double.MAX_VALUE) // If you are in range of the opponents goal shoot
 		{
                         getPlayer().kick(100, directionOtherGoal);
                 }
@@ -131,6 +140,10 @@ Update();
 		{
                         getPlayer().kick(15, directionOtherGoal);
                         getPlayer().dash(10);
+                }
+                else if(distanceBall < 0.7 && directionOtherGoal == Double.MAX_VALUE && closestPlayer != null) // If you don't know where to go just go anywhere
+		{
+                    shootTowardsClosestPlayer();
                 }
                 else if(distanceBall < 0.7 && directionOtherGoal == Double.MAX_VALUE) // If you don't know where to go just go anywhere
 		{
