@@ -491,7 +491,11 @@ callExpensiveStuff();
     @Override
     public void infoHearPlayMode(PlayMode playMode) {
         currentPlayMode = playMode;
-        if (playMode == PlayMode.BEFORE_KICK_OFF) {
+        if (playMode == PlayMode.BEFORE_KICK_OFF || 
+                playMode == PlayMode.GOAL_L || 
+                playMode == PlayMode.GOAL_R || 
+                playMode == PlayMode.GOAL_OTHER ||
+                playMode == PlayMode.GOAL_OWN) {
             getPlayer().move(startingX, startingY);
         }
     }

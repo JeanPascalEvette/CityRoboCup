@@ -56,16 +56,19 @@ public enum STATE { // FSM Implementation
         defenserId = count++;
                     switch (defenserId) {
                 case 0 :
-                    startingX = -40;startingY = 15;
+                    startingX = -30;startingY = 15;
                     break;
                 case 1 :
-                    startingX = -40;startingY = 5;
+                    startingX = -30;startingY = 5;
                     break;
                 case 2 :
-                    startingX = -40;startingY = -5;
+                    startingX = -30;startingY = -5;
                     break;
                 case 3 :
-                    startingX = -40;startingY = -15;
+                    startingX = -30;startingY = -15;
+                    break;
+                case 4 :
+                    startingX = -25;startingY = 0;
                     break;
             }
 
@@ -217,7 +220,7 @@ public enum STATE { // FSM Implementation
         {
             if(goDefaultStep == 0)
             {
-                if(canSeeOwnGoal && distanceOwnGoal > 15)
+                if(canSeeOwnGoal && distanceOwnGoal > 25)
                 {
                     getPlayer().turn(directionOwnGoal);
                     getPlayer().dash(50);

@@ -54,6 +54,15 @@ public enum STATE { // FSM Implementation
                 case 1 :
                     startingX = -10;startingY = -10;
                     break;
+                case 2 :
+                    startingX = -10;startingY = 20;
+                    break;
+                case 3 :
+                    startingX = -10;startingY = -20;
+                    break;
+                case 4 :
+                    startingX = -15;startingY = 0;
+                    break;
             }
     }
 
