@@ -49,7 +49,7 @@ public class Goalkeeper extends Player {
         if (distanceBall < 0.7) // If you can catch the ball - do so and kick it to a teammate.
         {
             getPlayer().catchBall(directionBall);
-            getPlayer().kick(50, closestPlayerDirection);
+            getPlayer().kick(70, closestPlayerDirection);
         }
         else if (distanceBall < 15) { // Else if you can see it go towards it
             turnTowardBall();
@@ -59,7 +59,11 @@ public class Goalkeeper extends Player {
 //            if(m_position != null)
 //            getPlayer().say("!goal "+distanceOwnGoal+" - "+m_position.x);
             getPlayer().dash(20);
-       } else if(canSeeOwnGoal && distanceOwnGoal < 2){ // If you are looking the wrong way turn around
+       } 
+        else if (canSeeBall){
+            getPlayer().turn(directionBall);
+        }
+        else if(canSeeOwnGoal && distanceOwnGoal < 2){ // If you are looking the wrong way turn around
             getPlayer().turn(180);
             leftRight = !leftRight; 
         }

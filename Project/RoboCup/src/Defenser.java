@@ -39,20 +39,20 @@ public enum STATE { // FSM Implementation
 		REST, // Inactive/Default state
 		GOTO_BALL, // Going towards the ball
 		BALL_CARRIER, // Currently carrying the ball
-		ATTACKING, // Not carrying the ball but supporting the attack
 		GO_BACK	//Going back to original position
 	}
     protected static int    count         = 0;
     private int             defenserId    = 0;
 	private STATE myState;
 	private int counter;
-
+        private int goDefaultStep;
     /**
      * Constructs a new simple client.
      */
     public Defenser(ArrayList<Player> t, int number) {   
         super(t, number);
         random = new Random(System.currentTimeMillis() + count);
+        myState = STATE.REST;
         defenserId = count++;
                     switch (defenserId) {
                 case 0 :
@@ -80,6 +80,8 @@ public enum STATE { // FSM Implementation
     @Override
     public void postInfo() {
         super.postInfo();
+        Update();
+        /*
         if (distanceBall < 0.7) // If you are in shooting range
         {
             if(closestPlayerOtherDistance < 3) // If an opponent is close passs it to a teammate
@@ -135,8 +137,121 @@ public enum STATE { // FSM Implementation
         {
             getPlayer().turn(90);
         }
+        */
     }
 
+    
+    public void Update()
+	{
+		switch(myState)
+		{
+			case REST : HandleRest(); break;
+			case GOTO_BALL : HandleGoToBall(); break;
+			case BALL_CARRIER : HandleBallCarrier(); break;
+			case GO_BACK : HandleGoBack(); break;
+		}
+	}
+	
+	public void HandleRest() {
+		if(canSeeBall)//
+		{
+			if(checkIfClosestToBall()){
+				myState = STATE.GOTO_BALL; return; }// If you are the closest go for the ball
+                        else if(distanceBall < 10) {
+				myState = STATE.GOTO_BALL; return; } // Else support the attack
+                        else
+                            getPlayer().turn(directionBall);
+                            
+		}
+		else
+                {
+                    getPlayer().turn(60); // If you don't tknow where the ball is turn around
+                }
+	}
+	public void HandleGoToBall() {
+		if(!canSeeBall) { myState = STATE.GO_BACK;counter = 0; return; } // If you lose sight of the ball go back to orginial position
+		if(!checkIfClosestToBall() && distanceBall > 5) { myState = STATE.GO_BACK;counter = 0; return; } // If you lose sight of the ball go back to orginial position
+		if(distanceBall <= 0.7) // If you are at <0.7 from the ball then you are now the carrier
+		{
+			myState = STATE.BALL_CARRIER; return;
+		}
+                else // Else go towards the ball
+		{
+                    getPlayer().turn(directionBall);
+                    getPlayer().dash(100);
+		}
+	}
+	
+	
+	public void HandleBallCarrier() {
+		if(!canSeeBall) // If you lose sight of the ball go back to original position
+		{
+			myState = STATE.GO_BACK; goDefaultStep = 0; counter = 0;
+			return;
+		}
+                if (hasToPass()) {
+                    shootTowardsClosestPlayer();
+                }
+                else if(canSeeOwnGoal) // If looking the wrong way
+		{
+                    getPlayer().turn(180);
+                }
+                else // Pass the ball to a teammate
+		{
+			shootTowardsClosestPlayer();
+		}
+	}
+        
+	public void HandleGoBack() {
+		if(canSeeBall)
+		{
+			if(checkIfClosestToBall()) // If you are the closest go for the ball
+				{ myState = STATE.GOTO_BALL; return; }
+		} // else if you cannot see the ball or no teammate has it
+		if(counter++<4){getPlayer().turn(90); } // turn a few times to try to see it
+                else  { goDefaultPos();} // else return to default position
+		
+	}
+    
+        private void goDefaultPos()
+        {
+            if(goDefaultStep == 0)
+            {
+                if(canSeeOwnGoal && distanceOwnGoal > 15)
+                {
+                    getPlayer().turn(directionOwnGoal);
+                    getPlayer().dash(50);
+                }
+                else if(!canSeeOwnGoal)
+                {
+                    getPlayer().turn(90);
+                }
+                else
+                {
+                    goDefaultStep++;
+                    myState = STATE.REST;
+                    return;
+                }
+            }
+            else
+            {
+                    myState = STATE.REST;
+                    return;
+            }
+                
+        }
+        
+    private boolean checkIfTeamMateHasBall() {
+        for(Player p : myTeam)
+        {
+            if(p.distanceBall < 3) // Check whether any player is 3m from the ball
+                return true;
+        }
+        return false;
+    }
+    
+    
+    
 
     /** {@inheritDoc} */
     @Override

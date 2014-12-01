@@ -103,6 +103,7 @@ public abstract class Player implements ControllerPlayer {
         closestPlayerOtherDistance = Double.MAX_VALUE;
         
         distanceOwnGoal= Double.MAX_VALUE;
+        directionOwnGoal = Double.MAX_VALUE;
         
         m_position = new Coords(0,0);//calculated based on the position of the flags
         positionLifetime = 0;
@@ -670,5 +671,28 @@ callExpensiveStuff();
         } catch (InterruptedException ex) {
             log.warn("Interrupted Exception ", ex);
         }
+    }
+    
+    
+    protected boolean hasToPass()
+    {
+        return (currentPlayMode == PlayMode.FREE_KICK_FAULT_OWN || 
+                currentPlayMode == PlayMode.FREE_KICK_OWN || 
+                currentPlayMode == PlayMode.CORNER_KICK_L || 
+                currentPlayMode == PlayMode.CORNER_KICK_R || 
+                currentPlayMode == PlayMode.CORNER_KICK_OTHER || 
+                currentPlayMode == PlayMode.CORNER_KICK_OWN || 
+                currentPlayMode == PlayMode.FREE_KICK_FAULT_L || 
+                currentPlayMode == PlayMode.FREE_KICK_FAULT_R || 
+                currentPlayMode == PlayMode.FREE_KICK_FAULT_OTHER || 
+                currentPlayMode == PlayMode.FREE_KICK_L || 
+                currentPlayMode == PlayMode.FREE_KICK_R || 
+                currentPlayMode == PlayMode.GOAL_KICK_L || 
+                currentPlayMode == PlayMode.GOAL_KICK_R || 
+                currentPlayMode == PlayMode.KICK_IN_OTHER || 
+                currentPlayMode == PlayMode.KICK_IN_OWN || 
+                currentPlayMode == PlayMode.KICK_IN_L || 
+                currentPlayMode == PlayMode.KICK_IN_R || 
+                currentPlayMode == PlayMode.KICK_OFF_OWN);
     }
 }

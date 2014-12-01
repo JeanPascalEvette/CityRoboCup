@@ -95,6 +95,9 @@ Update();
 				myState = STATE.GOTO_BALL; return; }// If you are the closest go for the ball
 			else if(checkIfTeamMateHasBall()){
 				myState = STATE.ATTACKING; return; } // Else support the attack
+                        else{
+                            getPlayer().turn(directionBall);
+                        }
 		}
 		else
 		getPlayer().turn(60); // If you don't tknow where the ball is turn around
@@ -119,9 +122,7 @@ Update();
 			myState = STATE.GO_BACK; counter = 0;
 			return;
 		}
-                if (currentPlayMode == PlayMode.FREE_KICK_FAULT_OWN || // Avoid passing the ball to yourself if in freekick/kickoff mode
-                        currentPlayMode == PlayMode.FREE_KICK_OWN || 
-                        currentPlayMode == PlayMode.KICK_OFF_OWN) {
+                if (hasToPass()) {
                     shootTowardsClosestPlayer();
                 }
                 else if(canSeeOwnGoal) // If some opponent is close try to pass it to a teammate
